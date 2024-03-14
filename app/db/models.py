@@ -20,25 +20,22 @@ class Product(Base):
     slug = Column('slug', String(100), nullable=False)
     price = Column('price', Float)
     description = Column('description', Text, nullable=True)
+    stock = Column('stock', Integer)
     category_id: Column = Column(
         'category_id', ForeignKey(Category.id), nullable=False)
 
     category = relationship('Category', back_populates='products')
-    order = relationship('Order', back_populates='products')
-    order_item = relationship('OrderItem', back_populates='product')
+    orders = relationship('Order', secondary='order_items')
 
 
 class Order(Base):
     __tablename__ = 'orders'
     id = Column('id', Integer, autoincrement=True, primary_key=True)
     date_time = Column('date_time', DateTime, server_default=func.now())
-    order_items: Column = Column(
-        'order_items', ForeignKey(Product.id), nullable=False)
     status = Column('status', String(40), nullable=False)
-    total = Column('total', Float)
+    mesa = Column('mesa', Integer)
 
-    products = relationship('Product', back_populates='order')
-    order_item = relationship('OrderItem', back_populates='order')
+    products = relationship('Product',  secondary='order_items')
 
 
 class Client(Base):
@@ -56,8 +53,6 @@ class OrderItem(Base):
     id_product: Column = Column(
         'id_product', ForeignKey(Product.id), nullable=False)
     quantity = Column('quantity', Integer, nullable=False)
-    unittprice = Column('unittprice', Float)
-    total = Column('total', Float)
 
-    order = relationship('Order', back_populates='order_item')
-    product = relationship('Product', back_populates='order_item')
+    order = relationship('Order', back_populates='order_items')
+    product = relationship('Product', back_populates='order_items')
