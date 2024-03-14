@@ -7,6 +7,6 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 
 ## Tecnologias
  - FastAPI
- - PostgreSQL
+ - MySQL
  - Docker
  
