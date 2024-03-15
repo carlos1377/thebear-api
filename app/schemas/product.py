@@ -7,7 +7,7 @@ class Product(BaseModel):
     name: str
     slug: str
     price: float
-    description: str
+    description: str | None
     stock: int
     category: Category
 
@@ -22,3 +22,7 @@ class Product(BaseModel):
         if not re.match('^([a-z]|[0-9]|-|_)+$', value):
             raise ValueError('Invalid slug')
         return value
+
+
+class ProductOutput(Product):
+    id: int

@@ -70,7 +70,6 @@ def test_product_schema_invalid_slug():
             name='Vodka',
             slug='vodka boa',
             price=0,
-            description='Lorem Ipsum Dolor Amet',
             stock=10,
             category=category
         )
