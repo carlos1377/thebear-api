@@ -1,7 +1,8 @@
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ARRAY
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy import func
 
 
 class Category(Base):
@@ -21,11 +22,11 @@ class Product(Base):
     price = Column('price', Float)
     description = Column('description', Text, nullable=True)
     stock = Column('stock', Integer)
-    category_id: Column = Column(
-        'category_id', ForeignKey(Category.id), nullable=False)
+    category_id = Column('category_id', ForeignKey(
+        Category.id), nullable=False)
 
     category = relationship('Category', back_populates='products')
-    orders = relationship('Order', secondary='order_items')
+    orders = relationship('OrderItem', back_populates='product')
 
 
 class Order(Base):
@@ -35,7 +36,7 @@ class Order(Base):
     status = Column('status', String(40), nullable=False)
     mesa = Column('mesa', Integer)
 
-    products = relationship('Product',  secondary='order_items')
+    order_items = relationship('OrderItem', back_populates='order')
 
 
 class Client(Base):
@@ -49,10 +50,9 @@ class Client(Base):
 class OrderItem(Base):
     __tablename__ = 'order_items'
     id = Column('id', Integer, autoincrement=True, primary_key=True)
-    id_order: Column = Column('id_order', ForeignKey(Order.id), nullable=False)
-    id_product: Column = Column(
-        'id_product', ForeignKey(Product.id), nullable=False)
+    id_order = Column('id_order', ForeignKey(Order.id), nullable=False)
+    id_product = Column('id_product', ForeignKey(Product.id), nullable=False)
     quantity = Column('quantity', Integer, nullable=False)
 
     order = relationship('Order', back_populates='order_items')
-    product = relationship('Product', back_populates='order_items')
+    product = relationship('Product', back_populates='orders')
