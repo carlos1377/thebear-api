@@ -1,5 +1,5 @@
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ARRAY
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import func
@@ -26,7 +26,8 @@ class Product(Base):
         Category.id), nullable=False)
 
     category = relationship('Category', back_populates='products')
-    orders = relationship('OrderItem', back_populates='product')
+    orders = relationship('Order', secondary='order_items',
+                          back_populates='products')
 
 
 class Order(Base):
@@ -36,7 +37,8 @@ class Order(Base):
     status = Column('status', String(40), nullable=False)
     mesa = Column('mesa', Integer)
 
-    order_items = relationship('OrderItem', back_populates='order')
+    products = relationship(
+        'Product', secondary='order_items', back_populates='orders')
 
 
 class Client(Base):
@@ -53,6 +55,3 @@ class OrderItem(Base):
     id_order = Column('id_order', ForeignKey(Order.id), nullable=False)
     id_product = Column('id_product', ForeignKey(Product.id), nullable=False)
     quantity = Column('quantity', Integer, nullable=False)
-
-    order = relationship('Order', back_populates='order_items')
-    product = relationship('Product', back_populates='orders')
