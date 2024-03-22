@@ -23,9 +23,11 @@ def test_category_add_service(db_session):
     db_session.commit()
 
 
-# def test_category_list_service(db_session, categories_on_db):
-#     service = CategoryServices(db_session)
+def test_category_list_service(db_session, categories_on_db):
+    service = CategoryServices(db_session)
 
-#     assert len(category_on_db) == 1
-#     assert category_on_db[0].name == 'Destilado'
-#     assert category_on_db[0].slug == 'destilado'
+    categories = service.list_categories()
+
+    assert len(categories) == 4
+    assert categories[0].name == 'Bebida'
+    assert categories[3].slug == 'bebida-sem-alcool'

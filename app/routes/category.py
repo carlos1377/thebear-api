@@ -16,3 +16,14 @@ def add_category(
     service.add_category(category=category)
 
     return Response(status_code=status.HTTP_201_CREATED)
+
+
+@router.get('/', description='List all categories')
+def list_categories(
+    db_session: Session = Depends(get_db_session)
+):
+    service = CategoryServices(db_session=db_session)
+
+    categories = service.list_categories()
+
+    return categories

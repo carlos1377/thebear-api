@@ -12,3 +12,8 @@ class CategoryServices:
 
         self.db_session.add(category_model)
         self.db_session.commit()
+
+    def list_categories(self):
+        categories_on_db = self.db_session.query(CategoryModel).all()
+
+        return categories_on_db
