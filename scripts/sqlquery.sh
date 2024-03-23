@@ -1,0 +1,1 @@
+docker run mysql bash -c 'mysql -h mysql -u root -p --database mydb --batch -e "select * from categories"'

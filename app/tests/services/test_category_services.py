@@ -23,7 +23,7 @@ def test_category_add_service(db_session):
     db_session.commit()
 
 
-def test_category_list_service(db_session, categories_on_db):
+def test_list_category_service(db_session, categories_on_db):
     service = CategoryServices(db_session)
 
     categories = service.list_categories()
@@ -31,3 +31,29 @@ def test_category_list_service(db_session, categories_on_db):
     assert len(categories) == 4
     assert categories[0].name == 'Bebida'
     assert categories[3].slug == 'bebida-sem-alcool'
+
+
+def test_list_category_by_id_service(db_session, categories_on_db):
+    category_id = categories_on_db[0].id
+
+    service = CategoryServices(db_session)
+
+    category = service.list_categories(id=category_id)
+
+    assert category.id == category_id
+    assert category.name == 'Bebida'
+    assert category.slug == 'bebida'
+
+
+def test_delete_category_service(db_session):
+    category_model = CategoryModel(name='Roupa', slug='roupa')
+    db_session.add(category_model)
+    db_session.commit()
+
+    service = CategoryServices(db_session=db_session)
+
+    service.delete_category(id=category_model.id)
+
+    categories_on_db = db_session.query(CategoryModel).all()
+
+    assert len(categories_on_db) == 0
