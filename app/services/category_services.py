@@ -9,7 +9,7 @@ class CategoryServices:
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
-    def find_by_id_or_404(self, id: int) -> Category | None:
+    def _find_by_id_or_404(self, id: int) -> Category | None:
         category = self.db_session.query(
             CategoryModel).filter_by(id=id).first()
 
@@ -27,16 +27,26 @@ class CategoryServices:
         self.db_session.add(category_model)
         self.db_session.commit()
 
-    def list_categories(self, id: int | None = None) -> list | Category:
+    def list_categories(self, id: int | None = None) -> list | Category | None:
         if id is None:
             categories_on_db = self.db_session.query(CategoryModel).all()
             return categories_on_db
 
-        category_on_db = self.find_by_id_or_404(id)
+        category_on_db = self._find_by_id_or_404(id)
         return category_on_db
 
-    def delete_category(self, id: int):
-        category_on_db = self.find_by_id_or_404(id)
+    def delete_category(self, id: int) -> None:
+        category_on_db = self._find_by_id_or_404(id)
 
         self.db_session.delete(category_on_db)
+        self.db_session.commit()
+
+    def update_category(self, id: int, category: Category):
+        category_on_db = self._find_by_id_or_404(id=id)
+
+        if category_on_db is not None:
+            category_on_db.name = category.name
+            category_on_db.slug = category.slug
+
+        self.db_session.add(category_on_db)
         self.db_session.commit()

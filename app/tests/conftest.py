@@ -35,3 +35,17 @@ def categories_on_db(db_session):
         db_session.delete(category)
 
     db_session.commit()
+
+
+@pytest.fixture()
+def category_on_db(db_session):
+    category = CategoryModel(name='Foo', slug='bar')
+
+    db_session.add(category)
+    db_session.commit()
+    db_session.refresh(category)
+
+    yield category
+
+    db_session.delete(category)
+    db_session.commit()

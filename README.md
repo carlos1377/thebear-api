@@ -13,3 +13,15 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - SQLAlchemy
 - MySQL
 - Docker
+
+### Próximos passos no desenvolvimento
+
+- [x] Setup
+- [x] Modelagem
+- [x] Categorias
+- [ ] Produtos
+- [ ] Clientes
+- [ ] Pedidos
+- [ ] ItemPedidos
+- [ ] Melhorar documentação
+- [ ] Refatoração

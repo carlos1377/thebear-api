@@ -57,3 +57,27 @@ def test_delete_category_service(db_session):
     categories_on_db = db_session.query(CategoryModel).all()
 
     assert len(categories_on_db) == 0
+
+
+def test_update_category_service(db_session):
+    category_model = CategoryModel(name='Roupa', slug='roupa')
+    db_session.add(category_model)
+    db_session.commit()
+
+    category_id = db_session.query(CategoryModel).first().id
+
+    service = CategoryServices(db_session=db_session)
+
+    new_category = Category(name='Bebida', slug='bebida')
+
+    service.update_category(id=category_id, category=new_category)
+
+    category_updated_on_db = db_session.query(
+        CategoryModel).filter_by(id=category_model.id).first()
+
+    assert category_updated_on_db is not None
+    assert category_updated_on_db.name == new_category.name
+    assert category_updated_on_db.slug == new_category.slug
+
+    db_session.delete(category_updated_on_db)
+    db_session.commit()

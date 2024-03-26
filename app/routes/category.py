@@ -51,3 +51,16 @@ def delete_category(
     service.delete_category(id=id)
 
     return Response(status_code=status.HTTP_200_OK)
+
+
+@router.put('/{id}', description='Update a category')
+def update_category(
+    category: Category,
+    id: int,
+    db_session: Session = Depends(get_db_session)
+):
+    service = CategoryServices(db_session)
+
+    service.update_category(id=id, category=category)
+
+    return Response(status_code=status.HTTP_200_OK)

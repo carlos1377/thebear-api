@@ -1,7 +1,8 @@
-from fastapi.testclient import TestClient
-from app.main import app
 from app.db.models import Category as CategoryModel
+from app.schemas.category import Category
+from fastapi.testclient import TestClient
 from fastapi import status
+from app.main import app
 
 
 client = TestClient(app=app)
@@ -54,6 +55,12 @@ def test_list_categories_by_id_route(categories_on_db):
     }
 
 
+def test_list_categories_by_id_route_invalid_id():
+    response = client.get('/category/3')
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 def test_delete_category_route(db_session):
     category_model = CategoryModel(name='Roupa', slug='roupa')
 
@@ -69,3 +76,26 @@ def test_delete_category_route_invalid_id():
     response = client.delete('/category/-40')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_update_category_route(db_session, category_on_db):
+    id = category_on_db.id
+
+    body = {
+        "name": "Foo",
+        "slug": "bar"
+    }
+
+    response = client.put(
+        f'/category/{id}', json=body)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    db_session.refresh(category_on_db)
+
+    updated_category_on_db = db_session.query(CategoryModel) \
+        .filter_by(id=id).first()
+
+    assert updated_category_on_db is not None
+    assert updated_category_on_db.name == 'Foo'
+    assert updated_category_on_db.slug == 'bar'
