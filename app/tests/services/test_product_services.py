@@ -5,14 +5,14 @@ from app.schemas.category import Category
 
 
 def test_add_product_service(db_session, category_on_db):
-    product = Product(
+    product = ProductInput(
         name='Heineken', slug='heineken', price=12.49, stock=50,
-        description='uma boa cerveja!'
+        description='uma boa cerveja!', category_slug=category_on_db.slug
     )
 
     service = ProductServices(db_session)
 
-    service.add_product(product, category_on_db.slug)
+    service.add_product(product)
 
     product_on_db = db_session.query(ProductModel).first()
 
