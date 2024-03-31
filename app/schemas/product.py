@@ -9,7 +9,6 @@ class Product(BaseModel):
     price: float
     description: str | None
     stock: int
-    category: Category
 
     @field_validator('price')
     def validate_price(cls, value):
@@ -26,3 +25,8 @@ class Product(BaseModel):
 
 class ProductOutput(Product):
     id: int
+    category: Category
+
+
+class ProductInput(Product):
+    category_slug: str
