@@ -11,7 +11,8 @@ class Category(Base):
     name = Column('name', String(60), nullable=False)
     slug = Column('slug', String(100), nullable=False)
 
-    products = relationship('Product', back_populates='category')
+    products = relationship(
+        'Product', back_populates='category')
 
 
 class Product(Base):
@@ -23,9 +24,10 @@ class Product(Base):
     description = Column('description', Text, nullable=True)
     stock = Column('stock', Integer)
     category_id = Column('category_id', ForeignKey(
-        Category.id), nullable=False)
+        Category.id, ondelete='SET NULL'), nullable=True)
 
-    category = relationship('Category', back_populates='products')
+    category = relationship(
+        'Category', back_populates='products')
     orders = relationship('Order', secondary='order_items',
                           back_populates='products')
 

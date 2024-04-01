@@ -44,6 +44,7 @@ def category_on_db(db_session):
     db_session.add(category)
     db_session.commit()
     db_session.refresh(category)
+    db_session.flush()
 
     yield category
 
