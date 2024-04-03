@@ -10,6 +10,18 @@ class ProductServices:
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
+    # REFATORAR PARA USAR .query().one_or_none() ao invés da função
+    # talvez usar um decorator para testar o output fazer raise HTTPException
+
+    # def none_raises_404(function):
+    #     def wrapper(*args, **kwargs):
+    #         result = function(*args, **kwargs)
+    #         if result is None:
+    #             raise HTTPException(
+    #             status_code=status.HTTP_404_NOT_FOUND,
+    #             detail=f' {slug} not found',
+    #         )
+
     def _find_category_by_slug_or_404(self, slug: str):
         category = self.db_session.query(
             CategoryModel).filter_by(slug=slug).first()

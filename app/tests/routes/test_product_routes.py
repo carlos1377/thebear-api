@@ -36,6 +36,7 @@ def test_add_product_route(db_session):
 
     product_on_db = db_session.query(ProductModel).first()
 
+    assert product_on_db is not None
     assert product_on_db.category_id is None
     assert product_on_db.name == 'Heineken'
 
