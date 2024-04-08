@@ -1,4 +1,4 @@
-from app.schemas.product import ProductInput
+from app.schemas.product import Product, ProductInput, ProductOutput
 from sqlalchemy.orm import Session
 from app.db.models import Product as ProductModel
 from app.db.models import Category as CategoryModel
@@ -15,7 +15,10 @@ class ProductServices:
 
     # def none_raises_404(function):
     #     def wrapper(*args, **kwargs):
-    #         result = function(*args, **kwargs)
+    #         try:
+    #             result = function(*args, **kwargs)
+    #         except:
+    #
     #         if result is None:
     #             raise HTTPException(
     #             status_code=status.HTTP_404_NOT_FOUND,
@@ -44,3 +47,31 @@ class ProductServices:
         self.db_session.add(product_model)
         self.db_session.commit()
         self.db_session.refresh(product_model)
+
+    def list_products(self) -> list[ProductModel]:
+        products_on_db = self.db_session.query(ProductModel).all()
+
+        return products_on_db
+
+    def update_product(self, id: int, product: ProductInput) -> ProductOutput:
+        product_on_db = self.db_session.query(
+            ProductModel).filter_by(id=id).one_or_none()
+
+        if product_on_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Product {id} not found')
+
+        category = self._find_category_by_slug_or_404(product.category_slug)
+
+        product_on_db.name = product.name
+        product_on_db.slug = product.slug
+        product_on_db.description = product.description
+        product_on_db.price = product.price
+        product_on_db.stock = product.stock
+        product_on_db.category_id = category.id
+
+        self.db_session.add(product_on_db)
+        self.db_session.commit()
+
+        return product_on_db

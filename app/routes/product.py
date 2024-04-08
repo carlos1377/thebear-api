@@ -18,3 +18,14 @@ def add_product(
     services.add_product(product=product)
 
     return Response(status_code=status.HTTP_201_CREATED)
+
+
+@router.get('/')
+def list_products(
+    db_session: Session = Depends(get_db_session)
+):
+    services = ProductServices(db_session=db_session)
+
+    products = services.list_products()
+
+    return products

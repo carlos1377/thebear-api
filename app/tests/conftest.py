@@ -1,6 +1,7 @@
 import pytest
 from app.db.connection import Session
 from app.db.models import Category as CategoryModel
+from app.db.models import Product as ProductModel
 
 
 @pytest.fixture()
@@ -49,4 +50,22 @@ def category_on_db(db_session):
     yield category
 
     db_session.delete(category)
+    db_session.commit()
+
+
+@pytest.fixture()
+def product_on_db(db_session, category_on_db):
+    product = ProductModel(
+        name='Heineken', slug='heineken',
+        price=12.99, description='', stock=10,
+        category_id=category_on_db.id
+    )
+
+    db_session.add(product)
+    db_session.commit()
+    db_session.refresh(product)
+
+    yield product
+
+    db_session.delete(product)
     db_session.commit()

@@ -42,3 +42,21 @@ def test_add_product_route(db_session):
 
     db_session.delete(product_on_db)
     db_session.commit()
+
+
+def test_list_product_route(db_session, product_on_db, category_on_db):
+    response = client.get('/product/')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data[0] == {
+        "id": product_on_db.id,
+        "name": product_on_db.name,
+        "slug": product_on_db.slug,
+        "price": product_on_db.price,
+        "stock": product_on_db.stock,
+        "description": product_on_db.description,
+        "category_id": category_on_db.id
+    }
