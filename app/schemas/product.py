@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator
-from app.schemas.category import Category
+from app.schemas.category import CategoryOutput
 import re
 
 
@@ -25,7 +25,7 @@ class Product(BaseModel):
 
 class ProductOutput(Product):
     id: int
-    category: Category
+    category: CategoryOutput
 
 
 class ProductInput(Product):

@@ -29,3 +29,16 @@ def list_products(
     products = services.list_products()
 
     return products
+
+
+@router.put('/{id}')
+def update_product(
+    id: int,
+    product: ProductInput,
+    db_session: Session = Depends(get_db_session)
+):
+    services = ProductServices(db_session=db_session)
+
+    product_updated = services.update_product(id, product)
+
+    return product_updated

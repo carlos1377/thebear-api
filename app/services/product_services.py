@@ -73,5 +73,6 @@ class ProductServices:
 
         self.db_session.add(product_on_db)
         self.db_session.commit()
+        self.db_session.refresh(product_on_db)
 
         return product_on_db

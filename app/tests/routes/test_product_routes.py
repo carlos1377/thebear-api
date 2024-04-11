@@ -60,3 +60,32 @@ def test_list_product_route(db_session, product_on_db, category_on_db):
         "description": product_on_db.description,
         "category_id": category_on_db.id
     }
+
+
+def test_update_product_route(product_on_db, category_on_db):
+    id = product_on_db.id
+
+    body = {
+        "name": 'Rock Stone',
+        "slug": 'rock-stone',
+        "price": 14.99,
+        "stock": 5,
+        "description": None,
+        "category_slug": category_on_db.slug
+    }
+
+    response = client.put(f'/product/{id}', json=body)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data == {
+        "id": id,
+        "name": 'Rock Stone',
+        "slug": 'rock-stone',
+        "price": 14.99,
+        "stock": 5,
+        "description": None,
+        "category_id": category_on_db.id
+    }
