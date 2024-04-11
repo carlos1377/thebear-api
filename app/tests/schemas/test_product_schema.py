@@ -1,5 +1,5 @@
 from app.schemas.product import Product, ProductOutput, ProductInput
-from app.schemas.category import Category
+from app.schemas.category import Category, CategoryOutput
 import pytest
 
 
@@ -52,7 +52,7 @@ def test_product_schema_invalid_slug():
 
 
 def test_product_output_schema():
-    category = Category(name='Bebida', slug='bebida')
+    category = CategoryOutput(id=2, name='Bebida', slug='bebida')
     product_output = ProductOutput(
         id=1,
         name='Vodka',
@@ -71,8 +71,9 @@ def test_product_output_schema():
         'description': None,
         'stock': 10,
         'category': {
+            'id': 2,
             'name': 'Bebida',
-            'slug': 'bebida',
+            'slug': 'bebida'
         }
     }
 
@@ -86,7 +87,7 @@ def test_product_output_schema_invalid_category():
             price=50,
             stock=10,
             description=None,
-            category='foo'
+            category='oi'
         )
 
 

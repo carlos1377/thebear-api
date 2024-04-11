@@ -29,3 +29,28 @@ def list_products(
     products = services.list_products()
 
     return products
+
+
+@router.put('/{id}')
+def update_product(
+    id: int,
+    product: ProductInput,
+    db_session: Session = Depends(get_db_session)
+):
+    services = ProductServices(db_session=db_session)
+
+    product_updated = services.update_product(id, product)
+
+    return product_updated
+
+
+@router.delete('/{_id}')
+def delete_product(
+    _id: int,
+    db_session: Session = Depends(get_db_session)
+):
+    services = ProductServices(db_session=db_session)
+
+    services.delete_product(_id)
+
+    return Response(status_code=status.HTTP_200_OK)

@@ -73,5 +73,17 @@ class ProductServices:
 
         self.db_session.add(product_on_db)
         self.db_session.commit()
+        self.db_session.refresh(product_on_db)
 
         return product_on_db
+
+    def delete_product(self, _id: int) -> None:
+        product_on_db = self.db_session.query(ProductModel).filter_by(id=_id).one_or_none()
+
+        if product_on_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Product {_id} not found'
+            )
+        self.db_session.delete(product_on_db)
+        self.db_session.commit()

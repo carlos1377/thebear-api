@@ -55,3 +55,13 @@ def test_update_product_services(db_session, product_on_db, category_on_db):
     assert product_on_db.name == new_product.name
     assert product_on_db.slug == new_product.slug
     assert product_on_db.price == new_product.price
+
+
+def test_delete_product_services(db_session, product_on_db):
+    service = ProductServices(db_session=db_session)
+
+    service.delete_product(product_on_db.id)
+
+    query_product = db_session.query(ProductModel).filter_by(id=product_on_db.id).one_or_none()
+
+    assert query_product is None
