@@ -6,13 +6,15 @@ def test_client_schema():
     client = Client(
         name='Carlos',
         email='carlos@email.com',
-        number='(99) 99999-9999'
+        number='(99) 99999-9999',
+        password='1234'
     )
 
     assert client.model_dump() == {
         'name': 'Carlos',
         'email': 'carlos@email.com',
-        'number': '(99) 99999-9999'
+        'number': '(99) 99999-9999',
+        'password': '1234'
     }
 
 
@@ -21,7 +23,8 @@ def test_client_schema_invalid_name():
         client = Client(
             name=1234,
             email='carlos@email.com',
-            number=None
+            number=None,
+            password='1234'
         )
 
 
@@ -30,7 +33,8 @@ def test_client_schema_invalid_email():
         client = Client(
             name='carlos',
             email='carlos',
-            number='(99) 99999-9999'
+            number='(99) 99999-9999',
+            password='1234'
         )
 
 
@@ -40,4 +44,15 @@ def test_client_schema_invalid_number():
             name='carlos',
             email='carlos@email.com',
             number=8899995555,
+            password='1234'
+        )
+
+
+def test_client_schema_invalid_password():
+    with pytest.raises(ValueError):
+        client = Client(
+            name='carlos',
+            email='carlos@email.com',
+            number='(99) 99999-9999',
+            password=None
         )

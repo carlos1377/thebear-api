@@ -49,6 +49,7 @@ class Client(Base):
     name = Column('name', String(60), nullable=False)
     email = Column('email', String(100), nullable=False)
     number = Column('number', String(20), nullable=True)
+    password = Column('password', String(255), nullable=False)
 
 
 class OrderItem(Base):

@@ -6,6 +6,7 @@ class Client(BaseModel):
     name: str
     email: EmailStr
     number: str | None
+    password: str
 
     @field_validator('number')
     def validate_number(cls, value):
