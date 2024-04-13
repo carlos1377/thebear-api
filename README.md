@@ -19,8 +19,9 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - [x] Setup
 - [x] Modelagem
 - [x] Categorias
-- [ ] Produtos
+- [x] Produtos
 - [ ] Clientes
+- [ ] Users
 - [ ] Pedidos
 - [ ] ItemPedidos
 - [ ] Melhorar documentação
