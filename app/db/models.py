@@ -1,5 +1,5 @@
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import func
@@ -47,9 +47,17 @@ class Client(Base):
     __tablename__ = 'clients'
     id = Column('id', Integer, autoincrement=True, primary_key=True)
     name = Column('name', String(60), nullable=False)
-    email = Column('email', String(100), nullable=False)
     number = Column('number', String(20), nullable=True)
+    cpf = Column('cpf', String(11), nullable=False)
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column('id', Integer, autoincrement=True, primary_key=True)
+    username = Column('username', String(40), nullable=False)
+    email = Column('email', String(100), nullable=False)
     password = Column('password', String(255), nullable=False)
+    is_staff = Column('is_staff', Boolean, nullable=False, default=False)
 
 
 class OrderItem(Base):
