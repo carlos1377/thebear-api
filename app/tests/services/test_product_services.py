@@ -39,6 +39,18 @@ def test_list_product_services(db_session, product_on_db):
     assert product[0].stock == product_on_db.stock
 
 
+def test_list_product_by_id_services(db_session, product_on_db):
+    _id = product_on_db.id
+
+    service = ProductServices(db_session)
+
+    product = service.list_products(_id)
+
+    assert product is not None
+    assert product.name == product_on_db.name
+    assert product.stock == product_on_db.stock
+
+
 def test_update_product_services(db_session, product_on_db, category_on_db):
     new_product = ProductInput(
         name='Polar', slug='polar', price=7.55, stock=240,

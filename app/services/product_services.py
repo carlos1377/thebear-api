@@ -48,10 +48,13 @@ class ProductServices:
         self.db_session.commit()
         self.db_session.refresh(product_model)
 
-    def list_products(self) -> list[ProductModel]:
-        products_on_db = self.db_session.query(ProductModel).all()
+    def list_products(self, _id: int = None) -> list[ProductModel] | ProductModel:
+        if _id is None:
+            products_on_db = self.db_session.query(ProductModel).all()
+            return products_on_db
+        product_on_db = self.db_session.query(ProductModel).filter_by(id=_id).first()
 
-        return products_on_db
+        return product_on_db
 
     def update_product(self, id: int, product: ProductInput) -> ProductOutput:
         product_on_db = self.db_session.query(

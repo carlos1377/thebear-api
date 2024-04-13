@@ -20,6 +20,17 @@ def add_product(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
+@router.get('/{id}')
+def list_products_by_id(
+    _id: int = None,
+    db_session: Session = Depends(get_db_session)
+):
+    services = ProductServices(db_session=db_session)
+
+    products = services.list_products(_id)
+
+    return products
+
 @router.get('/')
 def list_products(
     db_session: Session = Depends(get_db_session)
@@ -29,7 +40,6 @@ def list_products(
     products = services.list_products()
 
     return products
-
 
 @router.put('/{id}')
 def update_product(

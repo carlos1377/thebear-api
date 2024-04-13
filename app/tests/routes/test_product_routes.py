@@ -62,6 +62,26 @@ def test_list_product_route(db_session, product_on_db, category_on_db):
     }
 
 
+def test_list_product_by_id_route(db_session, product_on_db, category_on_db):
+    _id = product_on_db.id
+
+    response = client.get(f'/product/{_id}')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data[0] == {
+        "id": product_on_db.id,
+        "name": product_on_db.name,
+        "slug": product_on_db.slug,
+        "price": product_on_db.price,
+        "stock": product_on_db.stock,
+        "description": product_on_db.description,
+        "category_id": category_on_db.id
+    }
+
+
 def test_update_product_route(product_on_db, category_on_db):
     id = product_on_db.id
 
