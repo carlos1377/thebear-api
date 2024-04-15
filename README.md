@@ -21,6 +21,7 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - [x] Categorias
 - [x] Produtos
 - [ ] Clientes
+- [ ] Adicionar Assincronicidade
 - [ ] Users
 - [ ] Pedidos
 - [ ] ItemPedidos
