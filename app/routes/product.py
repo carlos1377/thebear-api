@@ -20,21 +20,9 @@ def add_product(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.get('/{id}')
+@router.get('/{_id}')
 def list_products_by_id(
-    _id: int = None,
-    db_session: Session = Depends(get_db_session)
-):
-    services = ProductServices(db_session=db_session)
-
-    products = services.list_products(_id)
-
-    return products
-
-
-@router.get('/{id}')
-def list_products_by_id(
-    _id: int = None,
+    _id: int,
     db_session: Session = Depends(get_db_session)
 ):
     services = ProductServices(db_session=db_session)

@@ -1,30 +1,32 @@
 from app.schemas.client import Client
 from sqlalchemy.orm import Session
 from app.db.models import Client as ClientModel
-import bcrypt
+from fastapi.exceptions import HTTPException
+from fastapi import status
 
 
 class ClientServices:
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
-    @staticmethod
-    def encrypt_password(self, password: str) -> bytes:
-        salt = bcrypt.gensalt()
+    def add_client(self, client: Client) -> None:
+        client_model = ClientModel(**client.model_dump())
 
-        hashed_password = bcrypt.hashpw(password.encode(), salt)
+        self.db_session.add(client_model)
+        self.db_session.commit()
+        self.db_session.refresh(client_model)
 
-        return hashed_password
+    def list_clients(self, id: int | None = None):
+        if id is None:
+            clients_on_db = self.db_session.query(ClientModel).all()
+            return clients_on_db
+        client_on_db = self.db_session.query(
+            ClientModel).filter_by(id=id).one_or_none()
 
-    def check_password(self, password: str, _id: int) -> bool:
-        client = self.db_session.query(ClientModel).filter_by(id=_id).one_or_none()
+        if client_on_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Client {id} not found',
+            )
 
-        if client is None:
-            return False
-
-        check = bcrypt.checkpw(
-            password=password.encode(),
-            hashed_password=client.password
-        )
-
-        return check
+        return client_on_db

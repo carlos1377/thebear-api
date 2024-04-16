@@ -71,7 +71,7 @@ def test_list_product_by_id_route(db_session, product_on_db, category_on_db):
 
     data = response.json()
 
-    assert data[0] == {
+    assert data == {
         "id": product_on_db.id,
         "name": product_on_db.name,
         "slug": product_on_db.slug,
