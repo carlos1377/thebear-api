@@ -23,3 +23,58 @@ def test_add_client_route(db_session):
 
     db_session.delete(client_on_db)
     db_session.commit()
+
+
+def test_list_client_route(clients_on_db):
+    response = client.get('/client')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data[0] == {
+        "id": clients_on_db[0].id,
+        "name": clients_on_db[0].name,
+        "number": clients_on_db[0].number,
+        "cpf": clients_on_db[0].cpf,
+    }
+
+
+def test_list_client_by_id_route(clients_on_db):
+    _id = clients_on_db[1].id
+
+    response = client.get(f'/client/{_id}')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data == {
+        "id": clients_on_db[1].id,
+        "name": clients_on_db[1].name,
+        "number": clients_on_db[1].number,
+        "cpf": clients_on_db[1].cpf,
+    }
+
+
+def test_update_client_route(client_on_db):
+    _id = client_on_db.id
+
+    body = {
+        'name': 'carlos',
+        'number': '(99) 99999-9999',
+        'cpf': '47545438078'
+    }
+
+    response = client.put(f'/client/{_id}', json=body)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data == {
+        "id": _id,
+        "name": body['name'],
+        "number": body['number'],
+        "cpf": body['cpf'],
+    }

@@ -88,7 +88,6 @@ def client_on_db(db_session):
 
     db_session.delete(client)
     db_session.commit()
-    db_session.refresh(client)
 
 
 @pytest.fixture()

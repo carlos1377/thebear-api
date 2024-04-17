@@ -1,6 +1,7 @@
 import bcrypt
 from app.db.models import User as UserModel
-# @staticmethod
+
+# TODO: IS THIS A STATIC METHOD?
 
 
 def encrypt_password(self, password: str) -> bytes:

@@ -1,32 +1,44 @@
-from app.schemas.client import Client
-from sqlalchemy.orm import Session
-from app.db.models import Client as ClientModel
 from fastapi.exceptions import HTTPException
+from app.db.models import Client as ClientModel
+from app.schemas.client import Client
 from fastapi import status
 
 
 class ClientServices:
-    def __init__(self, db_session: Session) -> None:
-        self.db_session = db_session
+    def __init__(self, repository) -> None:
+        self.repository = repository  # Instancia o repositório
 
-    def add_client(self, client: Client) -> None:
+    def add_client(self, client: Client):
         client_model = ClientModel(**client.model_dump())
 
-        self.db_session.add(client_model)
-        self.db_session.commit()
-        self.db_session.refresh(client_model)
+        self.repository.save(client_model)
 
-    def list_clients(self, id: int | None = None):
-        if id is None:
-            clients_on_db = self.db_session.query(ClientModel).all()
+    def list_clients(self, _id: int | None = None):
+        if _id is None:
+            clients_on_db = self.repository.get_all()
             return clients_on_db
-        client_on_db = self.db_session.query(
-            ClientModel).filter_by(id=id).one_or_none()
+
+        client_on_db = self.repository.id_one_or_404(_id)
 
         if client_on_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f'Client {id} not found',
+                detail=f'Client {_id} not found'
             )
 
         return client_on_db
+
+    def update_client(self, _id: int, client: Client):
+        client_dump = client.model_dump()
+
+        rows = self.repository.update_object(
+            _id, client_dump)
+
+        if rows == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Client {_id} not found'
+            )
+
+        client_dump['id'] = _id
+        return client_dump

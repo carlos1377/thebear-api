@@ -1,10 +1,10 @@
 from app.db.models import Client as ClientModel
 from app.services.client_services import ClientServices
 from app.schemas.client import Client
+from fastapi.exceptions import HTTPException
+import pytest
 
-
-def test_crypt_password_client_service(db_session):
-    pass
+from app.services.sqlalchemy_repository import SQLAlchemyRepository
 
 
 def test_add_client_service(db_session):
@@ -14,7 +14,8 @@ def test_add_client_service(db_session):
         cpf='41683048091'
     )
 
-    services = ClientServices(db_session=db_session)
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
 
     services.add_client(client)
 
@@ -31,7 +32,9 @@ def test_add_client_service(db_session):
 
 
 def test_list_client_service(db_session, clients_on_db):
-    services = ClientServices(db_session=db_session)
+
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
 
     clients = services.list_clients()
 
@@ -41,9 +44,38 @@ def test_list_client_service(db_session, clients_on_db):
 
 
 def test_list_client_by_id_service(db_session, clients_on_db):
-    services = ClientServices(db_session=db_session)
+
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
 
     client = services.list_clients(clients_on_db[0].id)
 
     assert client is not None
     assert client.name == clients_on_db[0].name
+
+
+def test_list_client_by_id_invalid_id_service(db_session):
+
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
+
+    with pytest.raises(HTTPException):
+        client = services.list_clients(-85)
+
+
+def test_update_client_service(db_session, client_on_db):
+
+    _id = client_on_db.id
+    client = Client(name='Foo Bar',
+                    number='(22) 99315-8556', cpf='07751005874')
+
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
+
+    services.update_client(_id, client)
+
+    client_in = services.repository.id_one_or_404(_id)
+
+    assert client_in.name == client.name
+    assert client_in.cpf == client.cpf
+    assert client_in.number == client.number
