@@ -1,0 +1,1 @@
+docker exec -it mysql_db sh -c "mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} --database ${MYSQL_DATABASE} --batch -e 'SET FOREIGN_KEY_CHECKS = 0;TRUNCATE TABLE users; TRUNCATE TABLE categories; TRUNCATE TABLE products; TRUNCATE TABLE clients;TRUNCATE TABLE orders; TRUNCATE TABLE order_items; SET FOREIGN_KEY_CHECKS = 1;'"

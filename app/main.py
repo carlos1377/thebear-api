@@ -6,7 +6,7 @@ from app.routes.client import router as client_router
 app = FastAPI()
 
 
-@app.get('/test')
+@app.get('/health-check')
 def route_test():
     return {'message': 'OK'}
 

@@ -8,7 +8,7 @@ class Repository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def id_one_or_404(self, _id):
+    def id_one_or_none(self, _id):
         raise NotImplementedError
 
     @abstractmethod

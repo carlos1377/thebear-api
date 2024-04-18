@@ -1,4 +1,6 @@
 from app.schemas.user import User
+from app.schemas.user import TokenData
+from datetime import datetime
 import pytest
 
 
@@ -56,3 +58,13 @@ def test_user_schema_invalid_is_staff():
             email='carlos@email.com',
             is_staff=None
         )
+
+
+def test_tokendata_schema():
+    expires_at = datetime.now()
+    token = TokenData(access_token='something', expires_at=expires_at)
+
+    assert token.model_dump() == {
+        'access_token': token.access_token,
+        'expires_at': expires_at,
+    }

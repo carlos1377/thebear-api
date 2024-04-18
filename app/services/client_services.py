@@ -2,10 +2,11 @@ from fastapi.exceptions import HTTPException
 from app.db.models import Client as ClientModel
 from app.schemas.client import Client
 from fastapi import status
+from app.repositories.base import Repository
 
 
 class ClientServices:
-    def __init__(self, repository) -> None:
+    def __init__(self, repository: Repository) -> None:
         self.repository = repository  # Instancia o repositório
 
     def add_client(self, client: Client):
@@ -18,7 +19,7 @@ class ClientServices:
             clients_on_db = self.repository.get_all()
             return clients_on_db
 
-        client_on_db = self.repository.id_one_or_404(_id)
+        client_on_db = self.repository.id_one_or_none(_id)
 
         if client_on_db is None:
             raise HTTPException(
@@ -42,3 +43,8 @@ class ClientServices:
 
         client_dump['id'] = _id
         return client_dump
+
+    def delete_client(self, _id: int):
+        client = self.repository.id_one_or_none(_id)
+
+        self.repository.remove(client)

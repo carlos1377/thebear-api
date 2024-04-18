@@ -78,3 +78,11 @@ def test_update_client_route(client_on_db):
         "number": body['number'],
         "cpf": body['cpf'],
     }
+
+
+def test_delete_client_route(client_on_db):
+    _id = client_on_db.id
+
+    response = client.delete(f'/client/{_id}')
+
+    assert response.status_code == status.HTTP_200_OK

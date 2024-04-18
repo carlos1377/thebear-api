@@ -20,9 +20,9 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - [x] Modelagem
 - [x] Categorias
 - [x] Produtos
-- [ ] Clientes
-- [ ] Adicionar Assincronicidade
+- [x] Clientes
 - [ ] Users
+- [ ] Adicionar Assincronicidade
 - [ ] Pedidos
 - [ ] ItemPedidos
 - [ ] Melhorar documentação

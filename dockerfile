@@ -4,6 +4,10 @@ ENV PYTHONUNBUFFERED 1
 ENV PATH="/root/.local/bin:$PATH"
 ENV PYTHONPATH='/'
 
+# TODO: AJUSTAR PARA RODAR SCRIPTS DENTRO DO CONTAINER
+# COPY /scripts /scripts
+# ENV PATH="/scripts:$PATH"
+
 COPY ./poetry.lock /
 COPY ./pyproject.toml /
 

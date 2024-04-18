@@ -54,7 +54,7 @@ class Client(Base):
 class User(Base):
     __tablename__ = 'users'
     id = Column('id', Integer, autoincrement=True, primary_key=True)
-    username = Column('username', String(40), nullable=False)
+    username = Column('username', String(40), nullable=False, unique=True)
     email = Column('email', String(100), nullable=False)
     password = Column('password', String(255), nullable=False)
     is_staff = Column('is_staff', Boolean, nullable=False, default=False)

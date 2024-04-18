@@ -1,10 +1,9 @@
+from app.repositories.sqlalchemy.sqlalchemy_repository import SQLAlchemyRepository
 from app.db.models import Client as ClientModel
 from app.services.client_services import ClientServices
 from app.schemas.client import Client
 from fastapi.exceptions import HTTPException
 import pytest
-
-from app.services.sqlalchemy_repository import SQLAlchemyRepository
 
 
 def test_add_client_service(db_session):
@@ -74,8 +73,22 @@ def test_update_client_service(db_session, client_on_db):
 
     services.update_client(_id, client)
 
-    client_in = services.repository.id_one_or_404(_id)
+    client_in = services.repository.id_one_or_none(_id)
 
     assert client_in.name == client.name
     assert client_in.cpf == client.cpf
     assert client_in.number == client.number
+
+
+def test_delete_client_service(db_session, client_on_db):
+
+    _id = client_on_db.id
+
+    repository = SQLAlchemyRepository(db_session, ClientModel)
+    services = ClientServices(repository)
+
+    services.delete_client(_id)
+
+    client_not_in_db = services.repository.id_one_or_none(_id)
+
+    assert client_not_in_db is None
