@@ -3,6 +3,10 @@ from app.db.connection import Session
 from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
 from app.db.models import Client as ClientModel
+from app.db.models import User as UserModel
+from passlib.context import CryptContext
+
+crypt_context = CryptContext(schemes=['sha256_crypt'])
 
 
 @pytest.fixture()
@@ -116,3 +120,20 @@ def clients_on_db(db_session):
 
     db_session.commit()
     db_session.flush()
+
+
+@pytest.fixture()
+def user_on_db(db_session):
+    user = UserModel(username='foo',
+                     password=crypt_context.hash('pass123!'),
+                     email='foo@bar.com', is_staff=False
+                     )
+
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    yield user
+
+    db_session.delete(user)
+    db_session.commit()

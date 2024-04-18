@@ -1,11 +1,11 @@
-from repositories.sqlalchemy.sqlalchemy_user_repository import (
+from app.repositories.sqlalchemy.sqlalchemy_user_repository import (
     SQLAlchemyUserRepository
 )
 from fastapi.exceptions import HTTPException
 from app.db.models import User as UserModel
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from jose import jwt
 import pytz
 from app.schemas.user import User, TokenData
 from fastapi import status
