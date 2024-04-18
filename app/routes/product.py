@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
-from app.routes.deps import get_db_session
+from app.routes.deps import auth, get_db_session
 from app.schemas.product import ProductInput
 from app.services.product_services import ProductServices
 
 
-router = APIRouter(prefix='/product')
+router = APIRouter(prefix='/product',  dependencies=[Depends(auth)])
 
 
 @router.post('/add')

@@ -6,6 +6,10 @@ from app.main import app
 
 client = TestClient(app=app)
 
+header = {'Authorization': 'Bearer token'}
+
+client.headers = header  # type: ignore
+
 
 def test_add_product_route(db_session):
     category_on_db = CategoryModel(name='foo', slug='bar')

@@ -4,8 +4,11 @@ from fastapi.testclient import TestClient
 from fastapi import status
 from app.main import app
 
-
 client = TestClient(app=app)
+
+header = {'Authorization': 'Bearer token'}
+
+client.headers = header  # type: ignore
 
 
 def test_add_category_route(db_session):

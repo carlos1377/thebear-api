@@ -1,5 +1,4 @@
-from app.schemas.user import User
-from app.schemas.user import TokenData
+from app.schemas.user import User, TokenData, UserLogin
 from datetime import datetime
 import pytest
 
@@ -67,4 +66,13 @@ def test_tokendata_schema():
     assert token.model_dump() == {
         'access_token': token.access_token,
         'expires_at': expires_at,
+    }
+
+
+def test_user_login_schema():
+    user = UserLogin(username='carlos', password='pass123!')
+
+    assert user.model_dump() == {
+        'username': user.username,
+        'password': user.password,
     }

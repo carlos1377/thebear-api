@@ -1,12 +1,12 @@
+from app.repositories.sqlalchemy.sqlalchemy_repository import SQLAlchemyRepository  # noqa
 from fastapi import APIRouter, Depends, Response, status
-from sqlalchemy.orm import Session
-from app.routes.deps import get_db_session
-from app.schemas.client import Client
 from app.services.client_services import ClientServices
-from app.repositories.sqlalchemy.sqlalchemy_repository import SQLAlchemyRepository
+from app.routes.deps import get_db_session, auth
 from app.db.models import Client as ClientModel
+from app.schemas.client import Client
+from sqlalchemy.orm import Session
 
-router = APIRouter(prefix='/client')
+router = APIRouter(prefix='/client', dependencies=[Depends(auth)])
 
 
 @router.post('/add')

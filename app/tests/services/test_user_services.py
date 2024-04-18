@@ -1,4 +1,4 @@
-from app.schemas.user import User
+from app.schemas.user import User, UserLogin
 from app.db.models import User as UserModel
 from app.repositories.sqlalchemy.sqlalchemy_user_repository import (
     SQLAlchemyUserRepository
@@ -7,6 +7,7 @@ from app.services.user_services import UserServices
 from fastapi.exceptions import HTTPException
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+from jose import jwt
 import pytest
 import pytz
 import os
@@ -60,9 +61,7 @@ def test_register_user_already_exists_username_service(db_session):
 
 
 def test_login_user_service(db_session, user_on_db):
-    user = User(username='foo',
-                password='pass123!',
-                email='foo@bar.com', is_staff=False)
+    user = UserLogin(username='foo', password='pass123!')
 
     repository = SQLAlchemyUserRepository(db_session, UserModel)
     services = UserServices(repository)
@@ -74,8 +73,7 @@ def test_login_user_service(db_session, user_on_db):
 
 
 def test_login_user_invalid_username_service(db_session, user_on_db):
-    user = User(username='carlos', password='pass123!',
-                email='foo@bar.com', is_staff=False)
+    user = UserLogin(username='carlos', password='pass123!')
 
     repository = SQLAlchemyUserRepository(db_session, UserModel)
     services = UserServices(repository)
@@ -85,11 +83,39 @@ def test_login_user_invalid_username_service(db_session, user_on_db):
 
 
 def test_login_user_invalid_password_service(db_session, user_on_db):
-    user = User(username='foo', password='pass123',
-                email='foo@bar.com', is_staff=False)
+    user = UserLogin(username='foo', password='pass123')
 
     repository = SQLAlchemyUserRepository(db_session, UserModel)
     services = UserServices(repository)
 
     with pytest.raises(HTTPException):
         services.user_login(user)
+
+
+def test_verify_token_user_service(db_session, user_on_db):
+    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    services = UserServices(repository)
+
+    data = {
+        'sub': user_on_db.username,
+        'exp': datetime.now(brazilian_timezone) + timedelta(minutes=30)
+    }
+
+    access_token = jwt.encode(data, SECRET_KEY, ALGORITHM)
+
+    services.verify_token(access_token)
+
+
+def test_verify_token_invalid_token_user_service(db_session, user_on_db):
+    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    services = UserServices(repository)
+
+    data = {
+        'sub': user_on_db.username,
+        'exp': datetime.now(brazilian_timezone) - timedelta(minutes=30)
+    }
+
+    access_token = jwt.encode(data, SECRET_KEY, ALGORITHM)
+
+    with pytest.raises(HTTPException):
+        services.verify_token(access_token)

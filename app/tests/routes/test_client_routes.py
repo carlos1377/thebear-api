@@ -5,6 +5,10 @@ from fastapi import status
 
 client = TestClient(app=app)
 
+header = {'Authorization': 'Bearer token'}
+
+client.headers = header  # type: ignore
+
 
 def test_add_client_route(db_session):
     body = {
