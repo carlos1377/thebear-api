@@ -1,5 +1,4 @@
 from app.db.models import Category as CategoryModel
-from app.schemas.category import Category
 from fastapi.testclient import TestClient
 from fastapi import status
 from app.main import app

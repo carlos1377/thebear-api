@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.sqlalchemy_user_repository import SQLAlchemyUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
 from app.services.user_services import UserServices
 from sqlalchemy.orm import Session as SessionType
 from fastapi.security import OAuth2PasswordBearer

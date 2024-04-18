@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.sqlalchemy_user_repository import SQLAlchemyUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
 from fastapi import APIRouter, Response, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services.user_services import UserServices

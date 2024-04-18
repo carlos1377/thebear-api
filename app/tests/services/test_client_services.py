@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.sqlalchemy_repository import SQLAlchemyRepository
+from app.repositories.sqlalchemy.repository import SQLAlchemyRepository
 from app.db.models import Client as ClientModel
 from app.services.client_services import ClientServices
 from app.schemas.client import Client

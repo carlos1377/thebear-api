@@ -1,6 +1,4 @@
-from app.repositories.sqlalchemy.sqlalchemy_user_repository import (
-    SQLAlchemyUserRepository
-)
+from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
 from fastapi.exceptions import HTTPException
 from app.db.models import User as UserModel
 from passlib.context import CryptContext

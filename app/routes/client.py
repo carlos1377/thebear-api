@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.sqlalchemy_repository import SQLAlchemyRepository  # noqa
+from app.repositories.sqlalchemy.repository import SQLAlchemyRepository  # noqa
 from fastapi import APIRouter, Depends, Response, status
 from app.services.client_services import ClientServices
 from app.routes.deps import get_db_session, auth

@@ -1,10 +1,8 @@
-from app.schemas.user import User, UserLogin
-from app.db.models import User as UserModel
-from app.repositories.sqlalchemy.sqlalchemy_user_repository import (
-    SQLAlchemyUserRepository
-)
+from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
 from app.services.user_services import UserServices
 from fastapi.exceptions import HTTPException
+from app.schemas.user import User, UserLogin
+from app.db.models import User as UserModel
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt
