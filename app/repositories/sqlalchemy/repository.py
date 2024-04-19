@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 from app.repositories.base import Repository
 
+# TODO: REFATORAR REPOSITORIOS, RECEBER REPOSITORIO AO INVES DE DB_SESSIONS
+# TODO: UM REPOSITORIO PARA CADA MODEL
+
 
 class SQLAlchemyRepository(Repository):
     def __init__(self, db_session: Session, model_service) -> None:

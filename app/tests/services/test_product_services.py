@@ -74,6 +74,7 @@ def test_delete_product_services(db_session, product_on_db):
 
     service.delete_product(product_on_db.id)
 
-    query_product = db_session.query(ProductModel).filter_by(id=product_on_db.id).one_or_none()
+    query_product = db_session.query(ProductModel).filter_by(
+        id=product_on_db.id).one_or_none()
 
     assert query_product is None

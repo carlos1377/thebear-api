@@ -6,6 +6,8 @@ from app.db.models import User as UserModel
 from app.schemas.user import User, UserLogin
 from app.routes.deps import get_db_session
 from sqlalchemy.orm import Session
+from app.routes.deps import oauth_scheme
+
 
 router = APIRouter(prefix='/user')
 
@@ -41,3 +43,34 @@ def user_login(
     token_data = services.user_login(user, expires_in=60)
 
     return token_data
+
+
+@router.delete('/{user_id}')
+def delete_user(
+    user_id: int,
+    db_session: Session = Depends(get_db_session),
+    token: str = Depends(oauth_scheme),
+):
+    repository = SQLAlchemyUserRepository(db_session, UserModel)
+
+    services = UserServices(repository)
+
+    services.delete_user(user_id, token)
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.get('/{username}')
+def get_user_by_username(
+    username: str,
+    db_session: Session = Depends(get_db_session),
+    token: str = Depends(oauth_scheme),
+):
+
+    repository = SQLAlchemyUserRepository(db_session, UserModel)
+
+    services = UserServices(repository)
+
+    user = services.get_user(username, token)
+
+    return user

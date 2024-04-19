@@ -22,8 +22,9 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - [x] Produtos
 - [x] Clientes
 - [ ] Users
-- [ ] Adicionar Assincronicidade
 - [ ] Pedidos
 - [ ] ItemPedidos
+- [ ] Adicionar Assincronicidade
+- [ ] Redis
 - [ ] Melhorar documentação
 - [ ] Refatoração

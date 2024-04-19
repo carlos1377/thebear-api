@@ -1,12 +1,21 @@
-import pytest
-from app.db.connection import Session
 from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
 from app.db.models import Client as ClientModel
 from app.db.models import User as UserModel
 from passlib.context import CryptContext
+from app.db.connection import Session
+import pytest
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
+
+
+def check_if_is_deleted(model, _object, db_session):
+    _object_on_db = db_session.query(model) \
+        .filter_by(id=_object.id).one_or_none()
+
+    if _object_on_db is None:
+        return False
+    return True
 
 
 @pytest.fixture()
@@ -38,9 +47,10 @@ def categories_on_db(db_session):
     yield categories
 
     for category in categories:
-        db_session.delete(category)
-
-    db_session.commit()
+        still_on_db = check_if_is_deleted(CategoryModel, category, db_session)
+        if still_on_db:
+            db_session.delete(category)
+            db_session.commit()
 
 
 @pytest.fixture()
@@ -54,8 +64,10 @@ def category_on_db(db_session):
 
     yield category
 
-    db_session.delete(category)
-    db_session.commit()
+    still_on_db = check_if_is_deleted(CategoryModel, category, db_session)
+    if still_on_db:
+        db_session.delete(category)
+        db_session.commit()
 
 
 @pytest.fixture()
@@ -72,8 +84,10 @@ def product_on_db(db_session, category_on_db):
 
     yield product
 
-    db_session.delete(product)
-    db_session.commit()
+    still_on_db = check_if_is_deleted(ProductModel, product, db_session)
+    if still_on_db:
+        db_session.delete(product)
+        db_session.commit()
 
 
 @pytest.fixture()
@@ -90,8 +104,10 @@ def client_on_db(db_session):
 
     yield client
 
-    db_session.delete(client)
-    db_session.commit()
+    still_on_db = check_if_is_deleted(ClientModel, client, db_session)
+    if still_on_db:
+        db_session.delete(client)
+        db_session.commit()
 
 
 @pytest.fixture()
@@ -116,9 +132,10 @@ def clients_on_db(db_session):
     yield clients
 
     for client in clients:
-        db_session.delete(client)
-
-    db_session.commit()
+        still_on_db = check_if_is_deleted(ClientModel, client, db_session)
+        if still_on_db:
+            db_session.delete(client)
+            db_session.commit()
     db_session.flush()
 
 
@@ -135,5 +152,26 @@ def user_on_db(db_session):
 
     yield user
 
-    db_session.delete(user)
+    still_on_db = check_if_is_deleted(UserModel, user, db_session)
+    if still_on_db:
+        db_session.delete(user)
+        db_session.commit()
+
+
+@pytest.fixture()
+def user_staff_on_db(db_session):
+    user = UserModel(username='main',
+                     password=crypt_context.hash('pass123!'),
+                     email='main@cto.com', is_staff=True
+                     )
+
+    db_session.add(user)
     db_session.commit()
+    db_session.refresh(user)
+
+    yield user
+
+    still_on_db = check_if_is_deleted(UserModel, user, db_session)
+    if still_on_db:
+        db_session.delete(user)
+        db_session.commit()

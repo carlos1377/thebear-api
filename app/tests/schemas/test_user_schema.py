@@ -1,4 +1,4 @@
-from app.schemas.user import User, TokenData, UserLogin
+from app.schemas.user import User, TokenData, UserLogin, UserOutput
 from datetime import datetime
 import pytest
 
@@ -75,4 +75,19 @@ def test_user_login_schema():
     assert user.model_dump() == {
         'username': user.username,
         'password': user.password,
+    }
+
+
+def test_user_output_schema():
+    user = UserOutput(
+        username='corso',
+        id=3, email='carlos@email.com',
+        is_staff=False,
+    )
+
+    assert user.model_dump() == {
+        'username': user.username,
+        'id': user.id,
+        'email': user.email,
+        'is_staff': user.is_staff,
     }
