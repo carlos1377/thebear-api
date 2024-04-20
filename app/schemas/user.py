@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from datetime import datetime
 import re
 
@@ -44,3 +44,31 @@ class UserOutput(BaseModel):
 class TokenData(BaseModel):
     access_token: str
     expires_at: datetime
+
+
+class FormChangePassword(BaseModel):
+    password: str
+    confirm_password: str
+    new_password: str
+
+    @model_validator(mode='after')
+    def check_passwords_match(self) -> 'FormChangePassword':
+        pw1 = self.password
+        pw2 = self.confirm_password
+        if pw1 is not None and pw2 is not None and pw1 != pw2:
+            raise ValueError('Passwords do not match')
+        return self
+
+
+class FormChangeEmail(BaseModel):
+    password: str
+    confirm_password: str
+    new_email: EmailStr
+
+    @model_validator(mode='after')
+    def check_passwords_match(self) -> 'FormChangeEmail':
+        pw1 = self.password
+        pw2 = self.confirm_password
+        if pw1 is not None and pw2 is not None and pw1 != pw2:
+            raise ValueError('Passwords do not match')
+        return self

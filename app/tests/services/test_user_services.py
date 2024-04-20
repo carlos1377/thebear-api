@@ -208,3 +208,41 @@ def test_get_user_by_username_invalid_username_user_service(db_session, user_sta
 
     with pytest.raises(HTTPException):
         user = services.get_user('jacare', token_data.access_token)
+
+
+def test_update_password_user_service(db_session, user_on_db):
+    repository = SQLAlchemyUserRepository(db_session)
+    services = UserServices(repository)
+
+    user = UserLogin(
+        username=user_on_db.username, password='pass123!')
+
+    new_password = 'new_password123!'
+
+    token_data = services.user_login(user)
+
+    services.change_password('pass123!', new_password, token_data.access_token)
+
+    updated_user = services.repository.id_one_or_none(user_on_db.id)
+
+    assert updated_user.password != new_password
+    assert crypt_context.verify(new_password, updated_user.password)
+    assert not crypt_context.verify(user_on_db.password, updated_user.password)
+
+
+def test_update_email_user_service(db_session, user_on_db):
+    repository = SQLAlchemyUserRepository(db_session)
+    services = UserServices(repository)
+
+    user = UserLogin(
+        username=user_on_db.username, password='pass123!')
+
+    new_email = 'new_password123!'
+
+    token_data = services.user_login(user)
+
+    services.change_email('pass123!', new_email, token_data.access_token)
+
+    updated_user = services.repository.id_one_or_none(user_on_db.id)
+
+    assert updated_user.email == new_email

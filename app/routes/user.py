@@ -1,12 +1,12 @@
 from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
+from app.schemas.user import (
+    FormChangeEmail, User, UserLogin, FormChangePassword)
 from fastapi import APIRouter, Response, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services.user_services import UserServices
-from app.db.models import User as UserModel
-from app.schemas.user import User, UserLogin
 from app.routes.deps import get_db_session
-from sqlalchemy.orm import Session
 from app.routes.deps import oauth_scheme
+from sqlalchemy.orm import Session
 
 
 router = APIRouter(prefix='/user')
@@ -17,7 +17,7 @@ def user_register(
     user: User,
     db_session: Session = Depends(get_db_session),
 ):
-    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    repository = SQLAlchemyUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -31,7 +31,7 @@ def user_login(
     login_request_form: OAuth2PasswordRequestForm = Depends(),
     db_session: Session = Depends(get_db_session),
 ):
-    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    repository = SQLAlchemyUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -51,7 +51,7 @@ def delete_user(
     db_session: Session = Depends(get_db_session),
     token: str = Depends(oauth_scheme),
 ):
-    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    repository = SQLAlchemyUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -67,10 +67,40 @@ def get_user_by_username(
     token: str = Depends(oauth_scheme),
 ):
 
-    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    repository = SQLAlchemyUserRepository(db_session)
 
     services = UserServices(repository)
 
     user = services.get_user(username, token)
 
     return user
+
+
+@router.post('/change-password')
+def change_password(
+    form: FormChangePassword,
+    db_session: Session = Depends(get_db_session),
+    token: str = Depends(oauth_scheme),
+):
+    repository = SQLAlchemyUserRepository(db_session)
+
+    services = UserServices(repository)
+
+    services.change_password(form.password, form.new_password, token)
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post('/change-email')
+def change_email(
+    form: FormChangeEmail,
+    db_session: Session = Depends(get_db_session),
+    token: str = Depends(oauth_scheme),
+):
+    repository = SQLAlchemyUserRepository(db_session)
+
+    services = UserServices(repository)
+
+    services.change_email(form.password, form.new_email, token)
+
+    return Response(status_code=status.HTTP_200_OK)

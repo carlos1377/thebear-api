@@ -4,7 +4,7 @@ from app.repositories.sqlalchemy.repository import SQLAlchemyRepository
 
 
 class SQLAlchemyUserRepository(SQLAlchemyRepository):
-    def __init__(self, db_session: Session, model_service=UserModel) -> None:
+    def __init__(self, db_session: Session) -> None:
         self._db_session = db_session
         self._model_service = UserModel
 

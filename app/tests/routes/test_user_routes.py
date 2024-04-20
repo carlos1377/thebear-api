@@ -6,6 +6,8 @@ from app.main import app
 
 client = TestClient(app=app)
 
+# TODO: Create function to login and DRY on routes that need login
+
 
 def test_register_user_route(db_session):
     body = {
@@ -143,3 +145,57 @@ def test_get_user_by_username_invalid_username_route(user_on_db, user_staff_on_d
     response = client.get('/user/jacare', headers=headers)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_change_password_user_route(user_on_db):
+    body = {
+        'username': user_on_db.username,
+        'password': 'pass123!',
+    }
+
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    response = client.post('/user/login', data=body, headers=headers)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    access_token = response.json()['access_token']
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    body = {
+        'password': 'pass123!',
+        'confirm_password': 'pass123!',
+        'new_password': 'Pass123!@',
+    }
+
+    response = client.post('/user/change-password', json=body, headers=headers)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_change_email_user_route(user_on_db):
+    body = {
+        'username': user_on_db.username,
+        'password': 'pass123!',
+    }
+
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    response = client.post('/user/login', data=body, headers=headers)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    access_token = response.json()['access_token']
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    body = {
+        'password': 'pass123!',
+        'confirm_password': 'pass123!',
+        'new_email': 'foo@bar.com',
+    }
+
+    response = client.post('/user/change-email', json=body, headers=headers)
+
+    assert response.status_code == status.HTTP_200_OK

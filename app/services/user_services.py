@@ -1,12 +1,12 @@
 from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
+from app.schemas.user import User, TokenData, UserLogin, UserOutput
 from fastapi.exceptions import HTTPException
 from app.db.models import User as UserModel
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-import pytz
-from app.schemas.user import User, TokenData, UserLogin, UserOutput
 from fastapi import status
+import pytz
 import os
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
@@ -84,6 +84,8 @@ class UserServices:
             )
 
     def delete_user(self, user_id: int, token: str):
+        self._verify_permission(token)
+
         user_to_delete = self.repository.id_one_or_none(user_id)
 
         if user_to_delete is None:
@@ -91,8 +93,6 @@ class UserServices:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"User {user_id} not found"
             )
-
-        self._verify_permission(token)
 
         self.repository.remove(user_to_delete)
 
@@ -113,7 +113,22 @@ class UserServices:
                 detail="You don't have permission to this action"
             )
 
+    def _verify_permission_change_yourself(self, token: str) -> int:
+        try:
+            data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Invalid Token'
+            )
+
+        user = self.repository.get_by_username(data['sub'])
+
+        return user.id
+
     def get_user(self, username: str, token: str):
+        self._verify_permission(token)
+
         user = self.repository.get_by_username(username)
 
         if user is None:
@@ -122,7 +137,6 @@ class UserServices:
                 detail=f"User {username} not found"
             )
 
-        self._verify_permission(token)
         user_output = UserOutput(
             username=user.username,
             email=user.email,
@@ -131,3 +145,43 @@ class UserServices:
         )
 
         return user_output
+
+    def change_password(self, password, new_password, token):
+        user_id = self._verify_permission_change_yourself(token)
+
+        user_to_update = self.repository.id_one_or_none(user_id)
+
+        if user_to_update is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        if not crypt_context.verify(password, user_to_update.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid password"
+            )
+
+        user_to_update.password = crypt_context.hash(new_password)
+        self.repository.save(user_to_update)
+
+    def change_email(self, password, new_email, token):
+        user_id = self._verify_permission_change_yourself(token)
+
+        user_to_update = self.repository.id_one_or_none(user_id)
+
+        if user_to_update is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        if not crypt_context.verify(password, user_to_update.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid password"
+            )
+
+        user_to_update.email = new_email
+        self.repository.save(user_to_update)

@@ -1,4 +1,7 @@
-from app.schemas.user import User, TokenData, UserLogin, UserOutput
+from app.schemas.user import (
+    User, TokenData, UserLogin, UserOutput, FormChangePassword,
+    FormChangeEmail
+)
 from datetime import datetime
 import pytest
 
@@ -90,4 +93,41 @@ def test_user_output_schema():
         'id': user.id,
         'email': user.email,
         'is_staff': user.is_staff,
+    }
+
+
+def test_form_change_password_schema():
+    form = FormChangePassword(
+        password='pass123!',
+        confirm_password='pass123!',
+        new_password='Pass1234#'
+    )
+
+    assert form.model_dump() == {
+        'password': 'pass123!',
+        'confirm_password': 'pass123!',
+        'new_password': 'Pass1234#'
+    }
+
+
+def test_form_change_password_invalid_passwords_schema():
+    with pytest.raises(ValueError):
+        form = FormChangePassword(
+            password='pass123!',
+            confirm_password='pas123!',
+            new_password='Pass1234#'
+        )
+
+
+def test_form_change_email_schema():
+    form = FormChangeEmail(
+        password='pass123!',
+        confirm_password='pass123!',
+        new_email='foo@bar.com'
+    )
+
+    assert form.model_dump() == {
+        'password': 'pass123!',
+        'confirm_password': 'pass123!',
+        'new_email': 'foo@bar.com'
     }
