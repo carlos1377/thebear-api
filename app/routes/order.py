@@ -43,3 +43,28 @@ def list_orders(
     orders = services.get_order()
 
     return orders
+
+
+@router.put('/{_id}')
+def update_order(
+    _id: int,
+    order: Order,
+    order_repository=Depends(order_repository)
+):
+    services = OrderServices(order_repository)
+
+    order_updated = services.update_order(_id, order)
+
+    return order_updated
+
+
+@router.delete('/{_id}')
+def delete_order(
+    _id: int,
+    order_repository=Depends(order_repository)
+):
+    services = OrderServices(order_repository)
+
+    services.delete_order(_id)
+
+    return Response(status_code=status.HTTP_200_OK)

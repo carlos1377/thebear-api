@@ -31,10 +31,37 @@ class OrderServices:
 
         if order_on_db is None:
             raise HTTPException(
-                detail='Order {_id} not found',
+                detail=f'Order {_id} not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
 
         order_on_db.date_time = self._format_date(order_on_db.date_time)
 
         return order_on_db
+
+    def update_order(self, _id: int, order: Order):
+        order_to_update = self.repository.id_one_or_none(_id)
+
+        if order_to_update is None:
+            raise HTTPException(
+                detail=f'Order {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
+        self.repository.update_object(
+            _id, order.model_dump(mode="json"))
+
+        order_updated = self.repository.id_one_or_none(_id)
+        order_updated.date_time = self._format_date(order_updated.date_time)
+
+        return order_updated
+
+    def delete_order(self, _id: int):
+        order_on_db = self.repository.id_one_or_none(_id)
+
+        if order_on_db is None:
+            raise HTTPException(
+                detail=f'Order {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        self.repository.remove(order_on_db)
