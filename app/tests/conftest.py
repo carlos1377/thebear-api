@@ -1,9 +1,12 @@
 from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
 from app.db.models import Client as ClientModel
+from app.db.models import Order as OrderModel
 from app.db.models import User as UserModel
 from passlib.context import CryptContext
 from app.db.connection import Session
+from sqlalchemy.orm import Session as SessionTyping
+from typing import Generator
 import pytest
 
 crypt_context = CryptContext(schemes=['sha256_crypt'])
@@ -19,9 +22,9 @@ def check_if_is_deleted(model, _object, db_session):
 
 
 @pytest.fixture()
-def db_session():
+def db_session() -> Generator[SessionTyping, None, None]:
     try:
-        session = Session()
+        session: SessionTyping = Session()
         yield session
     finally:
         session.close()
@@ -174,4 +177,20 @@ def user_staff_on_db(db_session):
     still_on_db = check_if_is_deleted(UserModel, user, db_session)
     if still_on_db:
         db_session.delete(user)
+        db_session.commit()
+
+
+@pytest.fixture()
+def order_on_db(db_session):
+    order = OrderModel(status=0, mesa=13)
+
+    db_session.add(order)
+    db_session.commit()
+    db_session.refresh(order)
+
+    yield order
+
+    still_on_db = check_if_is_deleted(OrderModel, order, db_session)
+    if still_on_db:
+        db_session.delete(order)
         db_session.commit()

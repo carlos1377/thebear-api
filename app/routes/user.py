@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import SAUserRepository  # noqa
 from app.schemas.user import (
     FormChangeEmail, User, UserLogin, FormChangePassword)
 from fastapi import APIRouter, Response, status, Depends
@@ -17,7 +17,7 @@ def user_register(
     user: User,
     db_session: Session = Depends(get_db_session),
 ):
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -31,7 +31,7 @@ def user_login(
     login_request_form: OAuth2PasswordRequestForm = Depends(),
     db_session: Session = Depends(get_db_session),
 ):
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -51,7 +51,7 @@ def delete_user(
     db_session: Session = Depends(get_db_session),
     token: str = Depends(oauth_scheme),
 ):
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -67,7 +67,7 @@ def get_user_by_username(
     token: str = Depends(oauth_scheme),
 ):
 
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -82,7 +82,7 @@ def change_password(
     db_session: Session = Depends(get_db_session),
     token: str = Depends(oauth_scheme),
 ):
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -97,7 +97,7 @@ def change_email(
     db_session: Session = Depends(get_db_session),
     token: str = Depends(oauth_scheme),
 ):
-    repository = SQLAlchemyUserRepository(db_session)
+    repository = SAUserRepository(db_session)
 
     services = UserServices(repository)
 

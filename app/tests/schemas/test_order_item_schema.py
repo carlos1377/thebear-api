@@ -7,7 +7,7 @@ from app.schemas.category import CategoryOutput
 
 def test_order_item_schema():
     category = CategoryOutput(id=2, name='Bebida', slug='bebida')
-    order = OrderOutput(id=1, status='Feito', mesa=1)
+    order = OrderOutput(id=1, status=2, mesa=1)
     product = ProductOutput(
         id=2, name='Vodka', slug='vodka', price=20,
         stock=40, category=category, description=None,

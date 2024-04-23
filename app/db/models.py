@@ -36,7 +36,7 @@ class Order(Base):
     __tablename__ = 'orders'
     id = Column('id', Integer, autoincrement=True, primary_key=True)
     date_time = Column('date_time', DateTime, server_default=func.now())
-    status = Column('status', String(40), nullable=False)
+    status = Column('status', Integer, nullable=False)
     mesa = Column('mesa', Integer)
 
     products = relationship(

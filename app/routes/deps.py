@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.user_repository import SQLAlchemyUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import SAUserRepository  # noqa
 from app.services.user_services import UserServices
 from sqlalchemy.orm import Session as SessionType
 from fastapi.security import OAuth2PasswordBearer
@@ -27,7 +27,7 @@ def auth(
     if TEST_MODE:
         return
 
-    repository = SQLAlchemyUserRepository(db_session, UserModel)
+    repository = SAUserRepository(db_session, UserModel)
     services = UserServices(repository)
 
     services.verify_token(token)
