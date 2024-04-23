@@ -194,3 +194,26 @@ def order_on_db(db_session):
     if still_on_db:
         db_session.delete(order)
         db_session.commit()
+
+
+@pytest.fixture()
+def orders_on_db(db_session):
+    orders = [
+        OrderModel(status=status, mesa=mesa)
+        for status, mesa in [(1, 5), (0, 10), (3, 18)]
+    ]
+
+    db_session.add_all(orders)
+    db_session.commit()
+
+    for order in orders:
+        db_session.refresh(order)
+
+    yield orders
+
+    for order in orders:
+        still_on_db = check_if_is_deleted(OrderModel, order, db_session)
+        if still_on_db:
+            db_session.delete(order)
+            db_session.commit()
+    db_session.flush()

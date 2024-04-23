@@ -41,3 +41,16 @@ def test_get_order_by_id_invalid_id_order_services(db_session):
 
     with pytest.raises(HTTPException):
         order = services.get_order(-9)
+
+
+def test_list_orders_order_services(db_session, orders_on_db):
+    repository = SAOrderRepository(db_session)
+    services = OrderServices(repository)
+
+    orders = services.get_order()
+
+    assert len(orders) == 3
+
+    assert orders[1].mesa == orders_on_db[1].mesa
+    assert orders[2].status == orders_on_db[2].status
+    assert orders[0].date_time == orders_on_db[2].date_time
