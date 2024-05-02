@@ -1,4 +1,5 @@
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
+from app.repositories.sqlalchemy.check_repository import SACheckRepository
 from app.repositories.sqlalchemy.user_repository import SAUserRepository
 from app.services.user_services import UserServices
 from sqlalchemy.orm import Session as SessionType
@@ -24,6 +25,14 @@ def order_repository(
     db_session: SessionType = Depends(get_db_session)
 ):
     repository = SAOrderRepository(db_session)
+
+    return repository
+
+
+def check_repository(
+    db_session: SessionType = Depends(get_db_session)
+):
+    repository = SACheckRepository(db_session)
 
     return repository
 

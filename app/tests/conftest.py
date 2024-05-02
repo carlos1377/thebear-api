@@ -1,6 +1,8 @@
+from app.db.models import OrderItem as OrderItemModel
 from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
 from app.db.models import Client as ClientModel
+from app.db.models import Check as CheckModel
 from app.db.models import Order as OrderModel
 from app.db.models import User as UserModel
 from passlib.context import CryptContext
@@ -12,8 +14,8 @@ import pytest
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 
 
-def check_if_is_deleted(model, _object, db_session):
-    _object_on_db = db_session.query(model) \
+def check_if_is_deleted(model, _object, _db_session):
+    _object_on_db = _db_session.query(model) \
         .filter_by(id=_object.id).one_or_none()
 
     if _object_on_db is None:
@@ -217,3 +219,60 @@ def orders_on_db(db_session):
             db_session.delete(order)
             db_session.commit()
     db_session.flush()
+
+
+@pytest.fixture()
+def check_on_db(db_session):
+    check = CheckModel(in_use=False)
+
+    db_session.add(check)
+    db_session.commit()
+    db_session.refresh(check)
+
+    yield check
+
+    db_session.delete(check)
+    db_session.commit()
+
+
+@pytest.fixture()
+def checks_on_db(db_session):
+    checks = [
+        CheckModel(in_use=use)
+        for use in [True, False]
+    ]
+
+    db_session.add_all(checks)
+    db_session.commit()
+    for check in checks:
+        db_session.refresh(check)
+
+    yield checks
+
+    for check in checks:
+        still_on_db = check_if_is_deleted(CheckModel, check, db_session)
+        if still_on_db:
+            db_session.delete(check)
+            db_session.commit()
+    db_session.flush()
+
+
+# @pytest.fixture()
+# def order_item_on_db(db_session, product_on_db, order_on_db, client_on_db):
+#     order_item = OrderItemModel(
+#         client_id=client_on_db.id,
+#         product_id=product_on_db.id,
+#         order_id=order_on_db.id,
+#         quantity=3,
+#     )
+
+#     db_session.add(order_item)
+#     db_session.commit()
+#     db_session.refresh(order_item)
+
+#     yield order_item
+
+#     still_on_db = check_if_is_deleted(OrderItemModel, order_item, db_session)
+#     if still_on_db:
+#         db_session.delete(order_item)
+#         db_session.commit()

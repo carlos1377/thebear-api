@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, PositiveInt
 import re
 
 
@@ -47,3 +47,7 @@ class Client(BaseModel):
         if validated_cpf != value:
             raise ValueError('Invalid CPF')
         return value
+
+
+class ClientOutput(Client):
+    id: PositiveInt

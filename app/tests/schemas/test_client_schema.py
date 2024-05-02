@@ -1,5 +1,5 @@
 import pytest
-from app.schemas.client import Client
+from app.schemas.client import Client, ClientOutput
 
 
 def test_client_schema():
@@ -41,3 +41,18 @@ def test_client_schema_invalid_cpf():
             number='(99) 99999-9999',
             cpf=41683048091
         )
+
+
+def test_client_output_schema():
+    client = ClientOutput(
+        id=1,
+        name='Carlos',
+        number='(99) 99999-9999',
+        cpf='41683048091'
+    )
+    assert client.model_dump() == {
+        'id': 1,
+        'name': 'Carlos',
+        'number': '(99) 99999-9999',
+        'cpf': '41683048091'
+    }

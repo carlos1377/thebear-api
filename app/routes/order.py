@@ -1,10 +1,8 @@
 from app.services.order_services import OrderServices
 from app.routes.deps import order_repository
-# from app.routes.deps import get_db_session
 from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
 from app.schemas.order import Order
-# from sqlalchemy.orm import Session
 
 
 router = APIRouter(prefix='/order')

@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from app.schemas.check import CheckOutput
+from datetime import datetime
+from pydantic import BaseModel, PositiveInt
 from enum import Enum
 
 
@@ -11,8 +13,11 @@ class Status(Enum):
 
 class Order(BaseModel):
     status: Status
-    mesa: int
+    check_id: PositiveInt
 
 
-class OrderOutput(Order):
+class OrderOutput(BaseModel):
     id: int
+    date_time: datetime
+    status: Status
+    check: CheckOutput
