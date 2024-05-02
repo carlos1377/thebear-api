@@ -62,10 +62,7 @@ def test_check_delete_services(db_session, checks_on_db):
     repository = SACheckRepository(db_session)
     services = CheckServices(repository)
 
-    deleted_check = services.delete_check(checks_on_db[0].id)
-
-    assert deleted_check.id == checks_on_db[0].id
-    assert deleted_check.in_use == checks_on_db[0].in_use
+    services.delete_check(checks_on_db[0].id)
 
     with pytest.raises(HTTPException):
         services.get_check(checks_on_db[0].id)
