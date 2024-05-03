@@ -1,8 +1,8 @@
 from app.services.order_services import OrderServices
+from app.schemas.order import Order, OrderPartial
 from app.routes.deps import order_repository
 from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
-from app.schemas.order import Order
 
 
 router = APIRouter(prefix='/order')
@@ -52,6 +52,19 @@ def update_order(
     services = OrderServices(order_repository)
 
     order_updated = services.update_order(_id, order)
+
+    return order_updated
+
+
+@router.patch('/{_id}')
+def partial_update_order(
+    _id: int,
+    new_status: OrderPartial,
+    order_repository=Depends(order_repository)
+):
+    services = OrderServices(order_repository)
+
+    order_updated = services.update_status(_id, new_status)
 
     return order_updated
 

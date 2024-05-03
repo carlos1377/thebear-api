@@ -1,5 +1,5 @@
+from app.schemas.order import Order, OrderPartial
 import pytest
-from app.schemas.order import Order
 
 
 def test_order_schema():
@@ -18,7 +18,7 @@ def test_order_schema():
 
 def test_order_schema_invalid_status():
     with pytest.raises(ValueError):
-        order = Order(
+        Order(
             status='Em preparo',
             check_id=2
         )
@@ -26,7 +26,15 @@ def test_order_schema_invalid_status():
 
 def test_order_schema_invalid_check_id():
     with pytest.raises(ValueError):
-        order = Order(
+        Order(
             status=0,
             check_id=-8
         )
+
+
+def test_order_partial_schema():
+    order = OrderPartial(status=2)
+
+    assert order.model_dump(mode='json') == {
+        'status': 2,
+    }

@@ -7,21 +7,23 @@ from app.main import app
 client = TestClient(app=app)
 
 
-def test_create_order_route(db_session):
+def test_create_order_route(db_session, check_on_db):
     body = {
         'status': 0,
-        'mesa': 5
+        'check_id': check_on_db.id
     }
 
     response = client.post('/order/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
+    db_session.commit()
+
     order_on_db = db_session.query(OrderModel).first()
 
     assert order_on_db is not None
     assert order_on_db.status == body['status']
-    assert order_on_db.mesa == body['mesa']
+    assert order_on_db.check_id == body['check_id']
 
     db_session.delete(order_on_db)
     db_session.commit()
@@ -37,7 +39,7 @@ def test_get_by_id_order_route(order_on_db):
     assert data == {
         'id': order_on_db.id,
         'status': order_on_db.status,
-        'mesa': order_on_db.mesa,
+        'check_id': order_on_db.check_id,
         'date_time': str(order_on_db.date_time)
     }
 
@@ -52,14 +54,14 @@ def test_list_orders_order_route(orders_on_db):
     assert data[1] == {
         'id': orders_on_db[1].id,
         'status': orders_on_db[1].status,
-        'mesa': orders_on_db[1].mesa,
+        'check_id': orders_on_db[1].check_id,
         'date_time': str(orders_on_db[1].date_time)
     }
 
     assert data[2] == {
         'id': orders_on_db[2].id,
         'status': orders_on_db[2].status,
-        'mesa': orders_on_db[2].mesa,
+        'check_id': orders_on_db[2].check_id,
         'date_time': str(orders_on_db[2].date_time)
     }
 
@@ -67,7 +69,7 @@ def test_list_orders_order_route(orders_on_db):
 def test_update_order_route(order_on_db):
     body = {
         'status': 2,
-        'mesa': 7
+        'check_id': order_on_db.check_id
     }
 
     response = client.put(f'/order/{order_on_db.id}', json=body)
@@ -79,15 +81,15 @@ def test_update_order_route(order_on_db):
     assert data == {
         'id': order_on_db.id,
         'status': body['status'],
-        'mesa': body['mesa'],
+        'check_id': body['check_id'],
         'date_time': str(order_on_db.date_time)
     }
 
 
-def test_update_order_invalid_id_order_route(order_on_db):
+def test_update_order_invalid_id_order_route(order_on_db, check_on_db):
     body = {
         'status': 2,
-        'mesa': 7
+        'check_id': check_on_db.id
     }
 
     response = client.put('/order/3', json=body)
@@ -99,3 +101,17 @@ def test_delete_order_route(order_on_db):
     response = client.delete(f'/order/{order_on_db.id}')
 
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_update_status_order_route(order_on_db):
+    body = {
+        "status": 1
+    }
+
+    response = client.patch(f'/order/{order_on_db.id}', json=body)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data['status'] == 1

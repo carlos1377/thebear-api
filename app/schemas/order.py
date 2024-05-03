@@ -16,6 +16,10 @@ class Order(BaseModel):
     check_id: PositiveInt
 
 
+class OrderPartial(BaseModel):
+    status: Status
+
+
 class OrderOutput(BaseModel):
     id: int
     date_time: datetime

@@ -183,8 +183,8 @@ def user_staff_on_db(db_session):
 
 
 @pytest.fixture()
-def order_on_db(db_session):
-    order = OrderModel(status=0, mesa=13)
+def order_on_db(db_session, check_on_db):
+    order = OrderModel(status=0, check_id=check_on_db.id)
 
     db_session.add(order)
     db_session.commit()
@@ -199,10 +199,14 @@ def order_on_db(db_session):
 
 
 @pytest.fixture()
-def orders_on_db(db_session):
+def orders_on_db(db_session, checks_on_db):
     orders = [
-        OrderModel(status=status, mesa=mesa)
-        for status, mesa in [(1, 5), (0, 10), (3, 18)]
+        OrderModel(status=status, check_id=check_id)
+        for status, check_id in [
+            (1, checks_on_db[0].id),
+            (0, checks_on_db[1].id),
+            (3, checks_on_db[0].id)
+        ]
     ]
 
     db_session.add_all(orders)

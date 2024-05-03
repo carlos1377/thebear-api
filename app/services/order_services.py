@@ -1,9 +1,12 @@
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
-from app.schemas.order import Order
+from app.schemas.order import Order, OrderPartial
 from app.db.models import Order as OrderModel
 from fastapi.exceptions import HTTPException
-from fastapi import status
 from datetime import datetime
+from fastapi import status
+
+# TODO: Quando atribuir um Check a um Order, CHECK.in_use = True
+# Posteriormente, quando for finalizar uma comanda, CHECK.in_use = False
 
 
 class OrderServices:
@@ -14,6 +17,14 @@ class OrderServices:
         return datetime.strftime(date_time, "%Y-%m-%d %X")
 
     def create_order(self, order: Order):
+        check = self.repository.get_check_by_id(order.check_id)
+
+        if check is None:
+            raise HTTPException(
+                detail=f'Check {order.check_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
         order_model = OrderModel(**order.model_dump(mode="json"))
         self.repository.save(order_model)
 
@@ -50,6 +61,23 @@ class OrderServices:
 
         self.repository.update_object(
             _id, order.model_dump(mode="json"))
+
+        order_updated = self.repository.id_one_or_none(_id)
+        order_updated.date_time = self._format_date(order_updated.date_time)
+
+        return order_updated
+
+    def update_status(self, _id: int, new_status: OrderPartial):
+        order_to_update = self.repository.id_one_or_none(_id)
+
+        if order_to_update is None:
+            raise HTTPException(
+                detail=f'Order {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
+        self.repository.update_object(
+            _id, new_status.model_dump(mode="json"))
 
         order_updated = self.repository.id_one_or_none(_id)
         order_updated.date_time = self._format_date(order_updated.date_time)
