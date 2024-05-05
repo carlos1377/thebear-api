@@ -21,6 +21,7 @@ class SQLAlchemyRepository(Repository):
     def save(self, _object) -> None:
         self._db_session.add(_object)
         self._db_session.commit()
+        self._db_session.refresh(_object)
 
     def remove(self, _object) -> None:
         self._db_session.delete(_object)

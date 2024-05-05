@@ -14,4 +14,4 @@ from sqlalchemy.orm import sessionmaker
 DB_URL = config('DB_URL')
 
 engine = create_engine(DB_URL)
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, autoflush=True)

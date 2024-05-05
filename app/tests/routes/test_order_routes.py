@@ -1,4 +1,5 @@
 from app.db.models import Order as OrderModel
+from app.db.models import OrderItem as OrderItemModel
 from fastapi.testclient import TestClient
 from fastapi import status
 from app.main import app
@@ -115,3 +116,25 @@ def test_update_status_order_route(order_on_db):
     data = response.json()
 
     assert data['status'] == 1
+
+
+def test_create_order_item_route(db_session, product_on_db, order_on_db):
+    body = {
+        'product_id': product_on_db.id,
+        'quantity': 1
+    }
+
+    response = client.post(f'/order/{order_on_db.id}/item', json=body)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    db_session.commit()
+
+    db_session.flush()
+
+    order_item_on_db = db_session.query(OrderItemModel).first()
+
+    assert order_item_on_db is not None
+
+    db_session.delete(order_item_on_db)
+    db_session.commit()

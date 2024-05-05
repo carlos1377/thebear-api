@@ -72,8 +72,8 @@ class User(Base):
 
 class OrderItem(Base):
     __tablename__ = 'order_items'
-    order_id = Column('order_id', ForeignKey(Order.id),
-                      nullable=False, primary_key=True)
+    order_id = Column('order_id', ForeignKey(Order.id, ondelete='SET NULL'),
+                      nullable=True, primary_key=True)
     product_id = Column('product_id', ForeignKey(
-        Product.id), nullable=False, primary_key=True)
+        Product.id, ondelete='SET NULL'), nullable=True, primary_key=True)
     quantity = Column('quantity', Integer, nullable=False)

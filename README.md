@@ -23,7 +23,6 @@ tendo em vista construir uma API para um Bar, um empreendimento que almejo.
 - [x] Clientes
 - [x] Users
 - [ ] Pedidos
-- [ ] ItemPedidos
 - [ ] Adicionar Assincronicidade
 - [ ] Redis
 - [ ] Melhorar documentação

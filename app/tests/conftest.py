@@ -15,8 +15,12 @@ crypt_context = CryptContext(schemes=['sha256_crypt'])
 
 
 def check_if_is_deleted(model, _object, _db_session):
-    _object_on_db = _db_session.query(model) \
-        .filter_by(id=_object.id).one_or_none()
+    if model is OrderItemModel:
+        _object_on_db = _db_session.query(model) \
+            .filter_by(order_id=_object).one_or_none()
+    else:
+        _object_on_db = _db_session.query(model) \
+            .filter_by(id=_object.id).one_or_none()
 
     if _object_on_db is None:
         return False
@@ -261,12 +265,61 @@ def checks_on_db(db_session):
     db_session.flush()
 
 
+# TODO: REFATORAR PRA SER NORMAL
+
+
+@pytest.fixture()
+def order_item_on_db(db_session, product_on_db, order_on_db):
+    order_item = OrderItemModel(
+        product_id=product_on_db.id,
+        order_id=order_on_db.id,
+        quantity=3,
+    )
+
+    db_session.add(order_item)
+    db_session.commit()
+    db_session.refresh(order_item)
+
+    yield order_item
+
+    db_session.delete(order_item)
+    db_session.commit()
+    db_session.flush()
+
+
 # @pytest.fixture()
-# def order_item_on_db(db_session, product_on_db, order_on_db, client_on_db):
+# def order_item_on_db(db_session):
+#     category = CategoryModel(name='Foo', slug='bar')
+
+#     db_session.add(category)
+#     db_session.commit()
+#     db_session.refresh(category)
+
+#     product = ProductModel(
+#         name='Heineken', slug='heineken',
+#         price=12.99, description='', stock=10,
+#         category_id=category.id
+#     )
+
+#     db_session.add(product)
+#     db_session.commit()
+#     db_session.refresh(product)
+
+#     check = CheckModel(in_use=False)
+
+#     db_session.add(check)
+#     db_session.commit()
+#     db_session.refresh(check)
+
+#     order = OrderModel(status=0, check_id=check.id)
+
+#     db_session.add(order)
+#     db_session.commit()
+#     db_session.refresh(order)
+
 #     order_item = OrderItemModel(
-#         client_id=client_on_db.id,
-#         product_id=product_on_db.id,
-#         order_id=order_on_db.id,
+#         product_id=product.id,
+#         order_id=order.id,
 #         quantity=3,
 #     )
 
@@ -276,7 +329,6 @@ def checks_on_db(db_session):
 
 #     yield order_item
 
-#     still_on_db = check_if_is_deleted(OrderItemModel, order_item, db_session)
-#     if still_on_db:
-#         db_session.delete(order_item)
-#         db_session.commit()
+#     db_session.delete(order_item)
+#     db_session.commit()
+#     db_session.flush()

@@ -1,3 +1,4 @@
+from app.schemas.product import ProductOutput
 from app.schemas.check import CheckOutput
 from datetime import datetime
 from pydantic import BaseModel, PositiveInt
@@ -20,8 +21,19 @@ class OrderPartial(BaseModel):
     status: Status
 
 
+class OrderItem(BaseModel):
+    product: ProductOutput
+    quantity: PositiveInt
+
+
 class OrderOutput(BaseModel):
     id: int
     date_time: datetime
     status: Status
-    check: CheckOutput
+    check_id: PositiveInt | None
+    order_items: list[OrderItem]
+
+
+class OrderItemInput(BaseModel):
+    product_id: PositiveInt
+    quantity: PositiveInt

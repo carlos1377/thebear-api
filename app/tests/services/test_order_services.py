@@ -1,8 +1,9 @@
-from app.services.order_services import OrderServices
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
-from app.schemas.order import Order, OrderPartial
-import pytest
+from app.services.order_services import OrderServices
+from app.schemas.order import Order, OrderPartial, OrderItemInput
 from fastapi.exceptions import HTTPException
+import pytest
+from pprint import pprint
 
 
 def test_create_order_services(db_session, check_on_db):
@@ -100,3 +101,23 @@ def test_partial_update_order_services(db_session, order_on_db):
     order = services.update_status(order_on_db.id, new_status)
 
     assert order.status == new_status.status.value
+
+
+def test_create_order_item_order_services(
+    db_session, product_on_db, order_on_db
+):
+    repository = SAOrderRepository(db_session)
+    services = OrderServices(repository)
+
+    order_item = OrderItemInput(product_id=product_on_db.id, quantity=1)
+
+    services.create_item(order_on_db.id, order_item)
+
+    order_items_on_db = services.repository.get_all_order_items_by_order_id(
+        order_on_db.id)
+
+    assert len(order_items_on_db) > 0
+    assert order_items_on_db[0].product_id == product_on_db.id
+    assert order_items_on_db[0].quantity == 1
+
+    services.repository.remove_all(order_items_on_db)

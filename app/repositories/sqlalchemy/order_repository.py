@@ -1,7 +1,10 @@
-from sqlalchemy.orm import Session
 from app.repositories.sqlalchemy.repository import SQLAlchemyRepository
+from app.db.models import OrderItem as OrderItemModel
+from app.db.models import Category as CategoryModel
+from app.db.models import Product as ProductModel
 from app.db.models import Order as OrderModel
 from app.db.models import Check as CheckModel
+from sqlalchemy.orm import Session
 
 
 class SAOrderRepository(SQLAlchemyRepository):
@@ -12,3 +15,20 @@ class SAOrderRepository(SQLAlchemyRepository):
     def get_check_by_id(self, _id: int):
         return self._db_session.query(CheckModel
                                       ).filter_by(id=_id).one_or_none()
+
+    def get_product_by_id(self, _id: int):
+        return self._db_session.query(ProductModel
+                                      ).filter_by(id=_id).one_or_none()
+
+    def get_category_by_id(self, _id: int):
+        return self._db_session.query(CategoryModel
+                                      ).filter_by(id=_id).one_or_none()
+
+    def get_all_order_items_by_order_id(self, order_id: int):
+        return self._db_session.query(
+            OrderItemModel).filter(OrderItemModel.order_id == order_id).all()
+
+    def remove_all(self, _list):
+        for _object in _list:
+            self._db_session.delete(_object)
+        self._db_session.commit()

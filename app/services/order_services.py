@@ -1,12 +1,18 @@
+from app.schemas.order import (
+    Order, OrderPartial, OrderItemInput, OrderOutput, OrderItem)
+from typing import Dict, List
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
-from app.schemas.order import Order, OrderPartial
+from app.db.models import OrderItem as OrderItemModel
 from app.db.models import Order as OrderModel
+from app.schemas.product import ProductOutput
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from datetime import datetime
 from fastapi import status
 
 # TODO: Quando atribuir um Check a um Order, CHECK.in_use = True
 # Posteriormente, quando for finalizar uma comanda, CHECK.in_use = False
+# TODO: METHOD orders/{id}/items/
 
 
 class OrderServices:
@@ -16,14 +22,18 @@ class OrderServices:
     def _format_date(self, date_time):
         return datetime.strftime(date_time, "%Y-%m-%d %X")
 
-    def create_order(self, order: Order):
-        check = self.repository.get_check_by_id(order.check_id)
-
-        if check is None:
+    def _if_none_404(self, value, _id: int, model: str = 'Order'):
+        if value is None:
             raise HTTPException(
-                detail=f'Check {order.check_id} not found',
+                detail=f'{model} {_id} not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
+
+    def create_order(self, order: Order):
+        self._if_none_404(
+            self.repository.get_check_by_id(order.check_id), order.check_id,
+            model='Check'
+        )
 
         order_model = OrderModel(**order.model_dump(mode="json"))
         self.repository.save(order_model)
@@ -40,24 +50,14 @@ class OrderServices:
 
         order_on_db = self.repository.id_one_or_none(_id)
 
-        if order_on_db is None:
-            raise HTTPException(
-                detail=f'Order {_id} not found',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
+        self._if_none_404(order_on_db, _id)
 
         order_on_db.date_time = self._format_date(order_on_db.date_time)
 
         return order_on_db
 
     def update_order(self, _id: int, order: Order):
-        order_to_update = self.repository.id_one_or_none(_id)
-
-        if order_to_update is None:
-            raise HTTPException(
-                detail=f'Order {_id} not found',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
+        self._if_none_404(self.repository.id_one_or_none(_id), _id)
 
         self.repository.update_object(
             _id, order.model_dump(mode="json"))
@@ -68,13 +68,7 @@ class OrderServices:
         return order_updated
 
     def update_status(self, _id: int, new_status: OrderPartial):
-        order_to_update = self.repository.id_one_or_none(_id)
-
-        if order_to_update is None:
-            raise HTTPException(
-                detail=f'Order {_id} not found',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
+        self._if_none_404(self.repository.id_one_or_none(_id), _id)
 
         self.repository.update_object(
             _id, new_status.model_dump(mode="json"))
@@ -86,10 +80,54 @@ class OrderServices:
 
     def delete_order(self, _id: int):
         order_on_db = self.repository.id_one_or_none(_id)
+        self._if_none_404(order_on_db, _id)
 
-        if order_on_db is None:
-            raise HTTPException(
-                detail=f'Order {_id} not found',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
         self.repository.remove(order_on_db)
+
+    def _serialize_order_item(self, order_item_in: OrderItemInput) -> OrderItem:  # noqa
+        product = jsonable_encoder(
+            self.repository.get_product_by_id(order_item_in.product_id))
+        category = jsonable_encoder(
+            self.repository.get_category_by_id(product['category_id']))
+
+        order_item_schema = OrderItem(
+            product=ProductOutput(**product, category=category),
+            quantity=order_item_in.quantity
+        )
+
+        return order_item_schema
+
+    def serialize_order_output(self, order_id: int):
+        order = self.repository.id_one_or_none(order_id)
+
+        order.date_time = self._format_date(order.date_time)
+
+        order = jsonable_encoder(order)
+        order_items = self.repository.get_all_order_items_by_order_id(order_id)
+
+        for item in order_items:
+            print(item)
+
+        for i, order_item in enumerate(order_items):
+            new_order_item = self._serialize_order_item(OrderItemInput(
+                product_id=order_item.product_id, quantity=order_item.quantity)
+            )
+            order_items[i] = new_order_item
+
+        order_output = OrderOutput(
+            **order, order_items=jsonable_encoder(order_items))
+
+        return order_output
+
+    def create_item(self, id_order: int, order_item: OrderItemInput):
+        self._if_none_404(self.repository.id_one_or_none(id_order), id_order)
+        self._if_none_404(
+            self.repository.get_product_by_id(order_item.product_id),
+            order_item.product_id, model='Product'
+        )
+
+        order_item_model = OrderItemModel(
+            order_id=id_order, **order_item.model_dump()
+        )
+
+        self.repository.save(order_item_model)
