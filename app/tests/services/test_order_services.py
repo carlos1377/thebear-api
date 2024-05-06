@@ -121,3 +121,18 @@ def test_create_order_item_order_services(
     assert order_items_on_db[0].quantity == 1
 
     services.repository.remove_all(order_items_on_db)
+
+
+# def test_get_order_items_of_order_services(db_session, order_items_on_db):
+#     repository = SAOrderRepository(db_session)
+#     services = OrderServices(repository)
+
+#     order_items = services.get_order_items(order_items_on_db[0].order_id)
+
+#     assert len(order_items) > 0
+
+#     assert order_items[0].product.id == order_items_on_db[0].product_id
+#     assert order_items[1].product.id == order_items_on_db[1].product_id
+#     assert order_items[0].quantity == order_items_on_db[0].quantity
+#     assert order_items[1].quantity == order_items_on_db[1].quantity
+#     assert order_items[2].quantity == order_items_on_db[2].quantity

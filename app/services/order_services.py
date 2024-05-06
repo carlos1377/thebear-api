@@ -1,7 +1,7 @@
-from app.schemas.order import (
-    Order, OrderPartial, OrderItemInput, OrderOutput, OrderItem)
-from typing import Dict, List
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
+from app.schemas.order import (
+    Order, OrderPartial, OrderItemInput, OrderOutput, OrderItem
+)
 from app.db.models import OrderItem as OrderItemModel
 from app.db.models import Order as OrderModel
 from app.schemas.product import ProductOutput
@@ -105,9 +105,6 @@ class OrderServices:
         order = jsonable_encoder(order)
         order_items = self.repository.get_all_order_items_by_order_id(order_id)
 
-        for item in order_items:
-            print(item)
-
         for i, order_item in enumerate(order_items):
             new_order_item = self._serialize_order_item(OrderItemInput(
                 product_id=order_item.product_id, quantity=order_item.quantity)
@@ -131,3 +128,14 @@ class OrderServices:
         )
 
         self.repository.save(order_item_model)
+
+    # def get_order_items(self, order_id: int):
+    #     items = self.repository.get_all_order_items_by_order_id(order_id)
+
+    #     order_items = []
+    #     for item in items:
+    #         item = self._serialize_order_item(OrderItemInput(
+    #             product_id=item.product_id, quantity=item.quantity))
+    #         order_items.append(item)
+
+    #     return order_items

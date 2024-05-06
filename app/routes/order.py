@@ -2,7 +2,6 @@ from app.services.order_services import OrderServices
 from app.schemas.order import Order, OrderPartial, OrderItemInput
 from app.routes.deps import order_repository
 from fastapi import Depends, Response, status
-from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 
 
@@ -82,7 +81,7 @@ def delete_order(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.post('/{_id}/item')
+@router.post('/{_id}/items')
 def create_order_item(
     _id: int,
     order_item: OrderItemInput,
@@ -95,3 +94,15 @@ def create_order_item(
     order_output = services.serialize_order_output(_id).model_dump_json()
 
     return Response(order_output, status_code=status.HTTP_201_CREATED)
+
+
+@router.get('/{_id}/items')
+def get_order_items(
+    _id: int,
+    order_repository=Depends(order_repository)
+):
+    services = OrderServices(order_repository)
+
+    order_output = services.serialize_order_output(_id)
+
+    return order_output

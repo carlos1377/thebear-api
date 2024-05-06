@@ -124,7 +124,7 @@ def test_create_order_item_route(db_session, product_on_db, order_on_db):
         'quantity': 1
     }
 
-    response = client.post(f'/order/{order_on_db.id}/item', json=body)
+    response = client.post(f'/order/{order_on_db.id}/items', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -138,3 +138,16 @@ def test_create_order_item_route(db_session, product_on_db, order_on_db):
 
     db_session.delete(order_item_on_db)
     db_session.commit()
+
+
+def test_get_order_item_route(order_items_on_db):
+    order_id = order_items_on_db[0].order_id
+    response = client.get(f'/order/{order_id}/items')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data['id'] == order_id
+    assert data['order_items'][0]['product']['id'] == order_items_on_db[0].product_id
+    assert data['order_items'][1]['product']['id'] == order_items_on_db[1].product_id

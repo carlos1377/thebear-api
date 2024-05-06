@@ -100,6 +100,44 @@ def product_on_db(db_session, category_on_db):
 
 
 @pytest.fixture()
+def products_on_db(db_session, category_on_db):
+    products = [
+        ProductModel(**product)
+        for product in ({
+            'name': 'Heineken',
+            'slug': 'heineken',
+            'price': 12.99,
+            'description': '',
+            'stock': 15,
+            'category_id': category_on_db.id
+        }, {
+            'name': "Jack Daniel's",
+            'slug': 'jack-daniels',
+            'price': 150,
+            'description': 'lorem ipsum dolor',
+            'stock': 5,
+            'category_id': category_on_db.id
+        }, {
+            'name': 'Presidente',
+            'slug': 'presidente-conhaque',
+            'price': 35.75,
+            'description': 'lorem',
+            'stock': 50,
+            'category_id': category_on_db.id
+        })
+    ]
+
+    db_session.add_all(products)
+    db_session.commit()
+
+    yield products
+
+    for product in products:
+        db_session.delete(product)
+    db_session.commit()
+
+
+@pytest.fixture()
 def client_on_db(db_session):
     client = ClientModel(
         name='foo bar',
@@ -265,9 +303,6 @@ def checks_on_db(db_session):
     db_session.flush()
 
 
-# TODO: REFATORAR PRA SER NORMAL
-
-
 @pytest.fixture()
 def order_item_on_db(db_session, product_on_db, order_on_db):
     order_item = OrderItemModel(
@@ -287,48 +322,28 @@ def order_item_on_db(db_session, product_on_db, order_on_db):
     db_session.flush()
 
 
-# @pytest.fixture()
-# def order_item_on_db(db_session):
-#     category = CategoryModel(name='Foo', slug='bar')
+@pytest.fixture()
+def order_items_on_db(db_session, products_on_db, order_on_db):
+    order_items = [
+        OrderItemModel(
+            product_id=product_id, order_id=order_on_db.id, quantity=quantity
+        )
+        for quantity, product_id in
+        (
+            (3, products_on_db[0].id),
+            (6, products_on_db[1].id),
+            (9, products_on_db[2].id),
+        )
+    ]
 
-#     db_session.add(category)
-#     db_session.commit()
-#     db_session.refresh(category)
+    db_session.add_all(order_items)
+    db_session.commit()
+    db_session.flush()
 
-#     product = ProductModel(
-#         name='Heineken', slug='heineken',
-#         price=12.99, description='', stock=10,
-#         category_id=category.id
-#     )
+    yield order_items
 
-#     db_session.add(product)
-#     db_session.commit()
-#     db_session.refresh(product)
+    for order_item in order_items:
+        db_session.delete(order_item)
+        db_session.commit()
 
-#     check = CheckModel(in_use=False)
-
-#     db_session.add(check)
-#     db_session.commit()
-#     db_session.refresh(check)
-
-#     order = OrderModel(status=0, check_id=check.id)
-
-#     db_session.add(order)
-#     db_session.commit()
-#     db_session.refresh(order)
-
-#     order_item = OrderItemModel(
-#         product_id=product.id,
-#         order_id=order.id,
-#         quantity=3,
-#     )
-
-#     db_session.add(order_item)
-#     db_session.commit()
-#     db_session.refresh(order_item)
-
-#     yield order_item
-
-#     db_session.delete(order_item)
-#     db_session.commit()
-#     db_session.flush()
+    db_session.flush()
