@@ -30,43 +30,6 @@ def test_create_order_route(db_session, check_on_db):
     db_session.commit()
 
 
-def test_get_by_id_order_route(order_on_db):
-    response = client.get(f'/order/{order_on_db.id}')
-
-    assert response.status_code == status.HTTP_200_OK
-
-    data = response.json()
-
-    assert data == {
-        'id': order_on_db.id,
-        'status': order_on_db.status,
-        'check_id': order_on_db.check_id,
-        'date_time': str(order_on_db.date_time)
-    }
-
-
-def test_list_orders_order_route(orders_on_db):
-    response = client.get('order/')
-
-    assert response.status_code == status.HTTP_200_OK
-
-    data = response.json()
-
-    assert data[1] == {
-        'id': orders_on_db[1].id,
-        'status': orders_on_db[1].status,
-        'check_id': orders_on_db[1].check_id,
-        'date_time': str(orders_on_db[1].date_time)
-    }
-
-    assert data[2] == {
-        'id': orders_on_db[2].id,
-        'status': orders_on_db[2].status,
-        'check_id': orders_on_db[2].check_id,
-        'date_time': str(orders_on_db[2].date_time)
-    }
-
-
 def test_update_order_route(order_on_db):
     body = {
         'status': 2,
@@ -140,7 +103,20 @@ def test_create_order_item_route(db_session, product_on_db, order_on_db):
     db_session.commit()
 
 
-def test_get_order_item_route(order_items_on_db):
+def test_get_order_output_route(order_items_on_db):
+    order_id = order_items_on_db[0].order_id
+    response = client.get(f'/order/{order_id}')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data['id'] == order_id
+    assert data['order_items'][0]['product']['id'] == order_items_on_db[0].product_id  # noqa
+    assert data['order_items'][1]['product']['id'] == order_items_on_db[1].product_id  # noqa
+
+
+def test_get_order_items_order_route(order_items_on_db):
     order_id = order_items_on_db[0].order_id
     response = client.get(f'/order/{order_id}/items')
 
@@ -148,6 +124,18 @@ def test_get_order_item_route(order_items_on_db):
 
     data = response.json()
 
-    assert data['id'] == order_id
-    assert data['order_items'][0]['product']['id'] == order_items_on_db[0].product_id
-    assert data['order_items'][1]['product']['id'] == order_items_on_db[1].product_id
+    assert data[0]['product']['id'] == order_items_on_db[0].product_id
+    assert data[1]['quantity'] == order_items_on_db[1].quantity
+
+
+def test_get_all_orders_route(order_items_on_db):
+    response = client.get('/orders/')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    # assert data == ''
+
+    assert data[0]['id'] == order_items_on_db[0].order_id
+    assert data[0]['order_items'][0]['quantity'] == order_items_on_db[0].quantity # noqa

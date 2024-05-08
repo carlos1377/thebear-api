@@ -105,14 +105,14 @@ class OrderServices:
         order = jsonable_encoder(order)
         order_items = self.repository.get_all_order_items_by_order_id(order_id)
 
-        for i, order_item in enumerate(order_items):
-            new_order_item = self._serialize_order_item(OrderItemInput(
+        serialized_orders_items = [
+            self._serialize_order_item(OrderItemInput(
                 product_id=order_item.product_id, quantity=order_item.quantity)
-            )
-            order_items[i] = new_order_item
+            ) for order_item in order_items
+        ]
 
         order_output = OrderOutput(
-            **order, order_items=jsonable_encoder(order_items))
+            **order, order_items=jsonable_encoder(serialized_orders_items))
 
         return order_output
 
@@ -129,13 +129,23 @@ class OrderServices:
 
         self.repository.save(order_item_model)
 
-    # def get_order_items(self, order_id: int):
-    #     items = self.repository.get_all_order_items_by_order_id(order_id)
+    def get_order_items(self, id_order: int):
+        self._if_none_404(self.repository.id_one_or_none(id_order), id_order)
 
-    #     order_items = []
-    #     for item in items:
-    #         item = self._serialize_order_item(OrderItemInput(
-    #             product_id=item.product_id, quantity=item.quantity))
-    #         order_items.append(item)
+        order_items = self.repository.get_all_order_items_by_order_id(id_order)
 
-    #     return order_items
+        serialized_orders_items = [
+            self._serialize_order_item(OrderItemInput(
+                product_id=order_item.product_id, quantity=order_item.quantity)
+            ) for order_item in order_items
+        ]
+        return serialized_orders_items
+
+    def get_all_orders(self):
+        orders = self.repository.get_all()
+
+        serialized_orders = [
+            self.serialize_order_output(order.id) for order in orders
+        ]
+
+        return serialized_orders

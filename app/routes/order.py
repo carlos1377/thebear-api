@@ -21,24 +21,24 @@ def create_order(
 
 
 @router.get('/{_id}')
-def get_order(
+def get_order_output(
     _id: int,
     order_repository=Depends(order_repository)
 ):
     services = OrderServices(order_repository)
 
-    order = services.get_order(_id)
+    order_output = services.serialize_order_output(_id)
 
-    return order
+    return order_output
 
 
-@router.get('/')
-def list_orders(
+@router.get('s/')
+def get_all_orders(
     order_repository=Depends(order_repository)
 ):
     services = OrderServices(order_repository)
 
-    orders = services.get_order()
+    orders = services.get_all_orders()
 
     return orders
 
@@ -103,6 +103,6 @@ def get_order_items(
 ):
     services = OrderServices(order_repository)
 
-    order_output = services.serialize_order_output(_id)
+    order_items = services.get_order_items(_id)
 
-    return order_output
+    return order_items

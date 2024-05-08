@@ -1,6 +1,6 @@
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
 from app.services.order_services import OrderServices
-from app.schemas.order import Order, OrderPartial, OrderItemInput
+from app.schemas.order import Order, OrderPartial, OrderItemInput, OrderOutput
 from fastapi.exceptions import HTTPException
 import pytest
 from pprint import pprint
@@ -123,16 +123,25 @@ def test_create_order_item_order_services(
     services.repository.remove_all(order_items_on_db)
 
 
-# def test_get_order_items_of_order_services(db_session, order_items_on_db):
-#     repository = SAOrderRepository(db_session)
-#     services = OrderServices(repository)
+def test_get_order_items_order_services(db_session, order_items_on_db):
+    repository = SAOrderRepository(db_session)
+    services = OrderServices(repository)
 
-#     order_items = services.get_order_items(order_items_on_db[0].order_id)
+    order_item_frst = services.get_order_items(order_items_on_db[0].order_id)
+    order_item_scnd = services.get_order_items(order_items_on_db[1].order_id)
 
-#     assert len(order_items) > 0
+    assert order_item_frst[0].product.id == order_items_on_db[0].product_id
+    assert order_item_scnd[1].quantity == order_items_on_db[1].quantity
 
-#     assert order_items[0].product.id == order_items_on_db[0].product_id
-#     assert order_items[1].product.id == order_items_on_db[1].product_id
-#     assert order_items[0].quantity == order_items_on_db[0].quantity
-#     assert order_items[1].quantity == order_items_on_db[1].quantity
-#     assert order_items[2].quantity == order_items_on_db[2].quantity
+
+def test_get_all_orders_services(db_session, order_items_on_db):
+    repository = SAOrderRepository(db_session)
+    services = OrderServices(repository)
+
+    orders = services.get_all_orders()
+
+    assert orders is not None
+    assert isinstance(orders, list)
+
+    assert orders[0].id == order_items_on_db[0].order_id
+    assert orders[0].order_items[0].quantity == order_items_on_db[0].quantity
