@@ -1,7 +1,6 @@
 from app.schemas.product import ProductOutput
-from app.schemas.check import CheckOutput
 from datetime import datetime
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, PositiveInt, field_serializer
 from enum import Enum
 
 
@@ -21,6 +20,10 @@ class OrderPartial(BaseModel):
     status: Status
 
 
+class OrderItemPartial(BaseModel):
+    quantity: PositiveInt
+
+
 class OrderItem(BaseModel):
     product: ProductOutput
     quantity: PositiveInt
@@ -32,6 +35,11 @@ class OrderOutput(BaseModel):
     status: Status
     check_id: PositiveInt | None
     order_items: list[OrderItem]
+
+    @field_serializer('date_time')
+    def serialize_date(self, date_time, _info):
+        str_date = datetime.strftime(date_time, "%Y-%m-%d %X")
+        return str_date
 
 
 class OrderItemInput(BaseModel):

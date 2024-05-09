@@ -45,7 +45,7 @@ def test_order_partial_schema():
 
 
 def test_order_output_schema():
-    date_now = datetime.now().strftime("%Y-%m-%dT%X")
+    date_now = datetime.now().strftime("%Y-%m-%d %X")
     check = CheckOutput(in_use=True, id=4)
 
     category = CategoryOutput(id=2, name='Bebida', slug='bebida')

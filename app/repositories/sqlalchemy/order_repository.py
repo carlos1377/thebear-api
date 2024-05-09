@@ -12,6 +12,11 @@ class SAOrderRepository(SQLAlchemyRepository):
         self._db_session = db_session
         self._model_service = OrderModel
 
+    def get_order_item_by_ids(self, order_id: int, product_id: int):
+        return self._db_session.query(
+            OrderItemModel).filter_by(
+                order_id=order_id, product_id=product_id).one_or_none()
+
     def get_check_by_id(self, _id: int):
         return self._db_session.query(CheckModel
                                       ).filter_by(id=_id).one_or_none()

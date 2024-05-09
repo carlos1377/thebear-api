@@ -135,7 +135,22 @@ def test_get_all_orders_route(order_items_on_db):
 
     data = response.json()
 
-    # assert data == ''
-
     assert data[0]['id'] == order_items_on_db[0].order_id
-    assert data[0]['order_items'][0]['quantity'] == order_items_on_db[0].quantity # noqa
+    assert data[0]['order_items'][0]['quantity'] == order_items_on_db[0].quantity  # noqa
+
+
+def test_update_quantity_order_route(order_item_on_db):
+    order_id = order_item_on_db.order_id
+    product_id = order_item_on_db.product_id
+
+    body = {
+        "quantity": 8
+    }
+
+    response = client.patch(f'/order/{order_id}/item/{product_id}', json=body)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data['quantity'] == body['quantity']

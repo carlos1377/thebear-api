@@ -38,24 +38,6 @@ class OrderServices:
         order_model = OrderModel(**order.model_dump(mode="json"))
         self.repository.save(order_model)
 
-    def get_order(self, _id: int | None = None):
-        if _id is None:
-            orders_on_db = self.repository.get_all()
-
-            if len(orders_on_db) > 0:
-                for order in orders_on_db:
-                    order.date_time = self._format_date(order.date_time)
-
-            return orders_on_db
-
-        order_on_db = self.repository.id_one_or_none(_id)
-
-        self._if_none_404(order_on_db, _id)
-
-        order_on_db.date_time = self._format_date(order_on_db.date_time)
-
-        return order_on_db
-
     def update_order(self, _id: int, order: Order):
         self._if_none_404(self.repository.id_one_or_none(_id), _id)
 
@@ -99,8 +81,6 @@ class OrderServices:
 
     def serialize_order_output(self, order_id: int):
         order = self.repository.id_one_or_none(order_id)
-
-        order.date_time = self._format_date(order.date_time)
 
         order = jsonable_encoder(order)
         order_items = self.repository.get_all_order_items_by_order_id(order_id)
@@ -149,3 +129,23 @@ class OrderServices:
         ]
 
         return serialized_orders
+
+    def update_quantity_order_item(
+            self, id_order: int, id_product: int, quantity: int):
+
+        self._if_none_404(
+            self.repository.id_one_or_none(id_order), id_order)
+        self._if_none_404(
+            self.repository.get_product_by_id(id_product),
+            id_product, 'Product')
+
+        order_item = self.repository.get_order_item_by_ids(
+            id_order, id_product)
+
+        order_item.quantity = quantity
+
+        self.repository.save(order_item)
+
+        return self._serialize_order_item(
+            OrderItemInput(product_id=id_product, quantity=quantity)
+        )

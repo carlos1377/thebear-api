@@ -1,9 +1,9 @@
+from app.schemas.order import (
+    Order, OrderPartial, OrderItemInput, OrderItemPartial)
 from app.services.order_services import OrderServices
-from app.schemas.order import Order, OrderPartial, OrderItemInput
 from app.routes.deps import order_repository
 from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
-
 
 router = APIRouter(prefix='/order')
 
@@ -106,3 +106,19 @@ def get_order_items(
     order_items = services.get_order_items(_id)
 
     return order_items
+
+
+@router.patch('/{order_id}/item/{product_id}')
+def update_quantity_order_item(
+    order_id: int,
+    product_id: int,
+    quantity: OrderItemPartial,
+    order_repository=Depends(order_repository),
+):
+    services = OrderServices(order_repository)
+
+    order_item = services.update_quantity_order_item(
+        order_id, product_id, quantity.quantity
+    )
+
+    return order_item
