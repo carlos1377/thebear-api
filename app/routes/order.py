@@ -1,6 +1,7 @@
+from app.services.order_services import OrderServices, OrderItemServices
 from app.schemas.order import (
-    Order, OrderPartial, OrderItemInput, OrderItemPartial)
-from app.services.order_services import OrderServices
+    Order, OrderPartial, OrderItemInput, OrderItemPartial
+)
 from app.routes.deps import order_repository
 from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
@@ -27,7 +28,7 @@ def get_order_output(
 ):
     services = OrderServices(order_repository)
 
-    order_output = services.serialize_order_output(_id)
+    order_output = services.serializer.serialize_order_output(_id)
 
     return order_output
 
@@ -87,11 +88,12 @@ def create_order_item(
     order_item: OrderItemInput,
     order_repository=Depends(order_repository)
 ):
-    services = OrderServices(order_repository)
+    services = OrderItemServices(order_repository)
 
     services.create_item(_id, order_item)
 
-    order_output = services.serialize_order_output(_id).model_dump_json()
+    order_output = services.serializer.serialize_order_output(
+        _id).model_dump_json()
 
     return Response(order_output, status_code=status.HTTP_201_CREATED)
 
@@ -101,7 +103,7 @@ def get_order_items(
     _id: int,
     order_repository=Depends(order_repository)
 ):
-    services = OrderServices(order_repository)
+    services = OrderItemServices(order_repository)
 
     order_items = services.get_order_items(_id)
 
@@ -115,10 +117,23 @@ def update_quantity_order_item(
     quantity: OrderItemPartial,
     order_repository=Depends(order_repository),
 ):
-    services = OrderServices(order_repository)
+    services = OrderItemServices(order_repository)
 
     order_item = services.update_quantity_order_item(
         order_id, product_id, quantity.quantity
     )
+
+    return order_item
+
+
+@router.delete('/{order_id}/item/{product_id}')
+def delete_order_item(
+    order_id: int,
+    product_id: int,
+    order_repository=Depends(order_repository),
+):
+    services = OrderItemServices(order_repository)
+
+    order_item = services.delete_order_item(order_id, product_id)
 
     return order_item

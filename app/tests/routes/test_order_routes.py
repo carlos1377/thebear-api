@@ -154,3 +154,17 @@ def test_update_quantity_order_route(order_item_on_db):
     data = response.json()
 
     assert data['quantity'] == body['quantity']
+
+
+def test_delete_order_item_route(order_item_on_db):
+    order_id = order_item_on_db.order_id
+    product_id = order_item_on_db.product_id
+
+    response = client.delete(f'/order/{order_id}/item/{product_id}')
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data['product']['id'] == product_id
+    assert data['quantity'] == order_item_on_db.quantity

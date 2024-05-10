@@ -1,4 +1,7 @@
-<h1 align="center">The Bear API</h1>
+<h1 align="center">The Bear API <img align="center" src="github-logo.png" width=50></h1>
+
+
+
 <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=RED&style=for-the-badge"/>
 
 ## Sobre o projeto

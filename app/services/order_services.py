@@ -15,56 +15,13 @@ from fastapi import status
 # TODO: METHOD orders/{id}/items/
 
 
-class OrderServices:
+def format_date(date_time):
+    return datetime.strftime(date_time, "%Y-%m-%d %X")
+
+
+class OrdersSerializers:
     def __init__(self, repository: SAOrderRepository) -> None:
         self.repository = repository
-
-    def _format_date(self, date_time):
-        return datetime.strftime(date_time, "%Y-%m-%d %X")
-
-    def _if_none_404(self, value, _id: int, model: str = 'Order'):
-        if value is None:
-            raise HTTPException(
-                detail=f'{model} {_id} not found',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
-
-    def create_order(self, order: Order):
-        self._if_none_404(
-            self.repository.get_check_by_id(order.check_id), order.check_id,
-            model='Check'
-        )
-
-        order_model = OrderModel(**order.model_dump(mode="json"))
-        self.repository.save(order_model)
-
-    def update_order(self, _id: int, order: Order):
-        self._if_none_404(self.repository.id_one_or_none(_id), _id)
-
-        self.repository.update_object(
-            _id, order.model_dump(mode="json"))
-
-        order_updated = self.repository.id_one_or_none(_id)
-        order_updated.date_time = self._format_date(order_updated.date_time)
-
-        return order_updated
-
-    def update_status(self, _id: int, new_status: OrderPartial):
-        self._if_none_404(self.repository.id_one_or_none(_id), _id)
-
-        self.repository.update_object(
-            _id, new_status.model_dump(mode="json"))
-
-        order_updated = self.repository.id_one_or_none(_id)
-        order_updated.date_time = self._format_date(order_updated.date_time)
-
-        return order_updated
-
-    def delete_order(self, _id: int):
-        order_on_db = self.repository.id_one_or_none(_id)
-        self._if_none_404(order_on_db, _id)
-
-        self.repository.remove(order_on_db)
 
     def _serialize_order_item(self, order_item_in: OrderItemInput) -> OrderItem:  # noqa
         product = jsonable_encoder(
@@ -96,6 +53,79 @@ class OrderServices:
 
         return order_output
 
+
+class OrderServices:
+    def __init__(self, repository: SAOrderRepository) -> None:
+        self.repository = repository
+        self.serializer = OrdersSerializers(repository)
+
+    def _if_none_404(self, value, _id: int, model: str = 'Order'):
+        if value is None:
+            raise HTTPException(
+                detail=f'{model} {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
+    def get_all_orders(self):
+        orders = self.repository.get_all()
+
+        serialized_orders = [
+            self.serializer.serialize_order_output(order.id)
+            for order in orders
+        ]
+
+        return serialized_orders
+
+    def create_order(self, order: Order):
+        self._if_none_404(
+            self.repository.get_check_by_id(order.check_id), order.check_id,
+            model='Check'
+        )
+
+        order_model = OrderModel(**order.model_dump(mode="json"))
+        self.repository.save(order_model)
+
+    def update_order(self, _id: int, order: Order):
+        self._if_none_404(self.repository.id_one_or_none(_id), _id)
+
+        self.repository.update_object(
+            _id, order.model_dump(mode="json"))
+
+        order_updated = self.repository.id_one_or_none(_id)
+        order_updated.date_time = format_date(order_updated.date_time)
+
+        return order_updated
+
+    def update_status(self, _id: int, new_status: OrderPartial):
+        self._if_none_404(self.repository.id_one_or_none(_id), _id)
+
+        self.repository.update_object(
+            _id, new_status.model_dump(mode="json"))
+
+        order_updated = self.repository.id_one_or_none(_id)
+        order_updated.date_time = format_date(order_updated.date_time)
+
+        return order_updated
+
+    def delete_order(self, _id: int):
+        order_on_db = self.repository.id_one_or_none(_id)
+        self._if_none_404(order_on_db, _id)
+
+        self.repository.remove(order_on_db)
+
+
+class OrderItemServices:
+    def __init__(self, repository: SAOrderRepository) -> None:
+        self.repository = repository
+        self.serializer = OrdersSerializers(repository)
+
+    def _if_none_404(self, value, _id: int, model: str = 'Order'):
+        if value is None:
+            raise HTTPException(
+                detail=f'{model} {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
     def create_item(self, id_order: int, order_item: OrderItemInput):
         self._if_none_404(self.repository.id_one_or_none(id_order), id_order)
         self._if_none_404(
@@ -115,20 +145,11 @@ class OrderServices:
         order_items = self.repository.get_all_order_items_by_order_id(id_order)
 
         serialized_orders_items = [
-            self._serialize_order_item(OrderItemInput(
+            self.serializer._serialize_order_item(OrderItemInput(
                 product_id=order_item.product_id, quantity=order_item.quantity)
             ) for order_item in order_items
         ]
         return serialized_orders_items
-
-    def get_all_orders(self):
-        orders = self.repository.get_all()
-
-        serialized_orders = [
-            self.serialize_order_output(order.id) for order in orders
-        ]
-
-        return serialized_orders
 
     def update_quantity_order_item(
             self, id_order: int, id_product: int, quantity: int):
@@ -146,6 +167,22 @@ class OrderServices:
 
         self.repository.save(order_item)
 
-        return self._serialize_order_item(
+        return self.serializer._serialize_order_item(
             OrderItemInput(product_id=id_product, quantity=quantity)
+        )
+
+    def delete_order_item(self, id_order: int, id_product: int):
+        self._if_none_404(
+            self.repository.id_one_or_none(id_order), id_order)
+        self._if_none_404(
+            self.repository.get_product_by_id(id_product),
+            id_product, 'Product')
+
+        order_item = self.repository.get_order_item_by_ids(
+            id_order, id_product)
+
+        self.repository.remove(order_item)
+
+        return self.serializer._serialize_order_item(
+            OrderItemInput(product_id=id_product, quantity=order_item.quantity)
         )

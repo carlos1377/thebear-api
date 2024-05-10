@@ -1,5 +1,5 @@
 from app.repositories.sqlalchemy.order_repository import SAOrderRepository
-from app.services.order_services import OrderServices
+from app.services.order_services import OrderServices, OrderItemServices
 from app.schemas.order import Order, OrderPartial, OrderItemInput
 from fastapi.exceptions import HTTPException
 import pytest
@@ -73,7 +73,7 @@ def test_create_order_item_order_services(
     db_session, product_on_db, order_on_db
 ):
     repository = SAOrderRepository(db_session)
-    services = OrderServices(repository)
+    services = OrderItemServices(repository)
 
     order_item = OrderItemInput(product_id=product_on_db.id, quantity=1)
 
@@ -91,7 +91,7 @@ def test_create_order_item_order_services(
 
 def test_get_order_items_order_services(db_session, order_items_on_db):
     repository = SAOrderRepository(db_session)
-    services = OrderServices(repository)
+    services = OrderItemServices(repository)
 
     order_item_frst = services.get_order_items(order_items_on_db[0].order_id)
     order_item_scnd = services.get_order_items(order_items_on_db[1].order_id)
@@ -113,10 +113,10 @@ def test_get_all_orders_services(db_session, order_items_on_db):
     assert orders[0].order_items[0].quantity == order_items_on_db[0].quantity
 
 
-def test_update_quantity_order_services(db_session, order_item_on_db):
+def test_update_quantity_order_item_services(db_session, order_item_on_db):
     order_id, product_id = order_item_on_db.order_id, order_item_on_db.product_id  # noqa
     repository = SAOrderRepository(db_session)
-    services = OrderServices(repository)
+    services = OrderItemServices(repository)
 
     order_item = services.update_quantity_order_item(order_id, product_id, 9)
 
@@ -126,3 +126,19 @@ def test_update_quantity_order_services(db_session, order_item_on_db):
         order_id, product_id)
 
     assert order_item_updated.quantity == 9
+
+
+def test_delete_order_item_services(db_session, order_item_on_db):
+    order_id, product_id = order_item_on_db.order_id, order_item_on_db.product_id  # noqa
+    repository = SAOrderRepository(db_session)
+    services = OrderItemServices(repository)
+
+    order_item_deleted = services.delete_order_item(order_id, product_id)
+
+    order_item_deleted_db = services.repository.get_order_item_by_ids(
+        order_id, product_id)
+
+    assert order_item_deleted_db is None
+
+    assert order_item_deleted.product.id == product_id
+    assert order_item_deleted.quantity == order_item_on_db.quantity
