@@ -5,7 +5,8 @@ from app.schemas.product import ProductInput
 from app.services.product_services import ProductServices
 
 
-router = APIRouter(prefix='/product',  dependencies=[Depends(auth)])
+router = APIRouter(prefix='/products',
+                   dependencies=[Depends(auth)], tags=['Products'])
 
 
 @router.post('/add')
@@ -20,14 +21,14 @@ def add_product(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.get('/{_id}')
+@router.get('/{id}')
 def list_products_by_id(
-    _id: int,
+    id: int,
     db_session: Session = Depends(get_db_session)
 ):
     services = ProductServices(db_session=db_session)
 
-    products = services.list_products(_id)
+    products = services.list_products(id)
 
     return products
 
@@ -56,13 +57,13 @@ def update_product(
     return product_updated
 
 
-@router.delete('/{_id}')
+@router.delete('/{id}')
 def delete_product(
-    _id: int,
+    id: int,
     db_session: Session = Depends(get_db_session)
 ):
     services = ProductServices(db_session=db_session)
 
-    services.delete_product(_id)
+    services.delete_product(id)
 
     return Response(status_code=status.HTTP_200_OK)

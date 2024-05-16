@@ -16,7 +16,7 @@ def test_add_category_route(db_session):
         "slug": "bebida"
     }
 
-    response = client.post('/category/add', json=body)
+    response = client.post('/categories/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -29,7 +29,7 @@ def test_add_category_route(db_session):
 
 
 def test_list_categories_route(categories_on_db):
-    response = client.get('/category')
+    response = client.get('/categories')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -44,7 +44,7 @@ def test_list_categories_route(categories_on_db):
 
 
 def test_list_categories_by_id_route(categories_on_db):
-    response = client.get(f'/category/{categories_on_db[2].id}')
+    response = client.get(f'/categories/{categories_on_db[2].id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -58,7 +58,7 @@ def test_list_categories_by_id_route(categories_on_db):
 
 
 def test_list_categories_by_id_route_invalid_id():
-    response = client.get('/category/3')
+    response = client.get('/categories/3')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -69,13 +69,13 @@ def test_delete_category_route(db_session):
     db_session.add(category_model)
     db_session.commit()
 
-    response = client.delete(f'/category/{category_model.id}')
+    response = client.delete(f'/categories/{category_model.id}')
 
     assert response.status_code == status.HTTP_200_OK
 
 
 def test_delete_category_route_invalid_id():
-    response = client.delete('/category/-40')
+    response = client.delete('/categories/-40')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -89,7 +89,7 @@ def test_update_category_route(db_session, category_on_db):
     }
 
     response = client.put(
-        f'/category/{id}', json=body)
+        f'/categories/{id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 

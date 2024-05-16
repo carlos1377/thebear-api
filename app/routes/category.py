@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.routes.deps import auth, get_db_session
 from app.services.category_services import CategoryServices
 
-router = APIRouter(prefix='/category',  dependencies=[Depends(auth)])
+router = APIRouter(prefix='/categories',
+                   dependencies=[Depends(auth)], tags=['Categories'])
 
 
 @router.post('/add', description='Add new category')

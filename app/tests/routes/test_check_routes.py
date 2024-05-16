@@ -5,13 +5,17 @@ from app.main import app
 
 client = TestClient(app)
 
+header = {'Authorization': 'Bearer token'}
+
+client.headers = header  # type: ignore
+
 
 def test_add_check_route(db_session):
     body = {
         'in_use': False
     }
 
-    response = client.post('/check/add', json=body)
+    response = client.post('/checks/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -26,7 +30,7 @@ def test_update_check_route(check_on_db):
         'in_use': True
     }
 
-    response = client.put(f'/check/{check_on_db.id}', json=body)
+    response = client.put(f'/checks/{check_on_db.id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -39,7 +43,7 @@ def test_update_check_route(check_on_db):
 
 
 def test_get_check_route(check_on_db):
-    response = client.get(f'/check/{check_on_db.id}')
+    response = client.get(f'/checks/{check_on_db.id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -52,7 +56,7 @@ def test_get_check_route(check_on_db):
 
 
 def test_list_checks_route(checks_on_db):
-    response = client.get('/check/')
+    response = client.get('/checks/')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -70,6 +74,6 @@ def test_list_checks_route(checks_on_db):
 
 
 def test_delete_check_route(check_on_db):
-    response = client.delete(f'/check/{check_on_db.id}')
+    response = client.delete(f'/checks/{check_on_db.id}')
 
     assert response.status_code == status.HTTP_200_OK

@@ -6,7 +6,8 @@ from app.db.models import Client as ClientModel
 from app.schemas.client import Client
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix='/client', dependencies=[Depends(auth)])
+router = APIRouter(
+    prefix='/clients', dependencies=[Depends(auth)], tags=['Clients'])
 
 
 @router.post('/add')
@@ -35,41 +36,41 @@ def list_clients(
     return clients
 
 
-@router.get('/{_id}')
+@router.get('/{id}')
 def list_clients_by_id(
-    _id: int,
+    id: int,
     db_session: Session = Depends(get_db_session),
 ):
     repository = SQLAlchemyRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
-    clients = services.list_clients(_id)
+    clients = services.list_clients(id)
 
     return clients
 
 
-@router.put('/{_id}')
+@router.put('/{id}')
 def update_client(
-    _id: int,
+    id: int,
     client: Client,
     db_session: Session = Depends(get_db_session),
 ):
     repository = SQLAlchemyRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
-    client_in = services.update_client(_id, client)
+    client_in = services.update_client(id, client)
 
     return client_in
 
 
-@router.delete('/{_id}')
+@router.delete('/{id}')
 def delete_client(
-    _id: int,
+    id: int,
     db_session: Session = Depends(get_db_session),
 ):
     repository = SQLAlchemyRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
-    services.delete_client(_id)
+    services.delete_client(id)
 
     return Response(status_code=status.HTTP_200_OK)

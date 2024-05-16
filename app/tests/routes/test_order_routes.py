@@ -4,8 +4,11 @@ from fastapi.testclient import TestClient
 from fastapi import status
 from app.main import app
 
-
 client = TestClient(app=app)
+
+header = {'Authorization': 'Bearer token'}
+
+client.headers = header  # type: ignore
 
 
 def test_create_order_route(db_session, check_on_db):
@@ -14,7 +17,7 @@ def test_create_order_route(db_session, check_on_db):
         'check_id': check_on_db.id
     }
 
-    response = client.post('/order/add', json=body)
+    response = client.post('/orders/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -36,7 +39,7 @@ def test_update_order_route(order_on_db):
         'check_id': order_on_db.check_id
     }
 
-    response = client.put(f'/order/{order_on_db.id}', json=body)
+    response = client.put(f'/orders/{order_on_db.id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -56,13 +59,13 @@ def test_update_order_invalid_id_order_route(order_on_db, check_on_db):
         'check_id': check_on_db.id
     }
 
-    response = client.put('/order/3', json=body)
+    response = client.put('/orders/3', json=body)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_delete_order_route(order_on_db):
-    response = client.delete(f'/order/{order_on_db.id}')
+    response = client.delete(f'/orders/{order_on_db.id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -72,7 +75,7 @@ def test_update_status_order_route(order_on_db):
         "status": 1
     }
 
-    response = client.patch(f'/order/{order_on_db.id}', json=body)
+    response = client.patch(f'/orders/{order_on_db.id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -87,7 +90,7 @@ def test_create_order_item_route(db_session, product_on_db, order_on_db):
         'quantity': 1
     }
 
-    response = client.post(f'/order/{order_on_db.id}/items', json=body)
+    response = client.post(f'/orders/{order_on_db.id}/items', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -105,7 +108,7 @@ def test_create_order_item_route(db_session, product_on_db, order_on_db):
 
 def test_get_order_output_route(order_items_on_db):
     order_id = order_items_on_db[0].order_id
-    response = client.get(f'/order/{order_id}')
+    response = client.get(f'/orders/{order_id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -118,7 +121,7 @@ def test_get_order_output_route(order_items_on_db):
 
 def test_get_order_items_order_route(order_items_on_db):
     order_id = order_items_on_db[0].order_id
-    response = client.get(f'/order/{order_id}/items')
+    response = client.get(f'/orders/{order_id}/items')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -147,7 +150,8 @@ def test_update_quantity_order_route(order_item_on_db):
         "quantity": 8
     }
 
-    response = client.patch(f'/order/{order_id}/item/{product_id}', json=body)
+    response = client.patch(
+        f'/orders/{order_id}/items/{product_id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -160,7 +164,7 @@ def test_delete_order_item_route(order_item_on_db):
     order_id = order_item_on_db.order_id
     product_id = order_item_on_db.product_id
 
-    response = client.delete(f'/order/{order_id}/item/{product_id}')
+    response = client.delete(f'/orders/{order_id}/items/{product_id}')
 
     assert response.status_code == status.HTTP_200_OK
 

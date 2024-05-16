@@ -17,7 +17,7 @@ def test_register_user_route(db_session):
         'is_staff': False,
     }
 
-    response = client.post('/user/register', json=body)
+    response = client.post('/users/register', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -37,7 +37,7 @@ def test_login_user_route(user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -55,7 +55,7 @@ def test_login_invalid_username_user_route(user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -68,7 +68,7 @@ def test_login_invalid_password_user_route(user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -81,7 +81,7 @@ def test_get_user_by_username_route(user_on_db, user_staff_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -89,7 +89,7 @@ def test_get_user_by_username_route(user_on_db, user_staff_on_db):
 
     headers = {'Authorization': f'Bearer {access_token}'}
 
-    response = client.get(f'/user/{user_on_db.username}', headers=headers)
+    response = client.get(f'/users/{user_on_db.username}', headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -111,7 +111,7 @@ def test_delete_user_route(user_staff_on_db, user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -121,7 +121,7 @@ def test_delete_user_route(user_staff_on_db, user_on_db):
 
     headers = {'Authorization': f'Bearer {access_token}'}
 
-    response = client.delete(f'/user/{user_on_db.id}', headers=headers)
+    response = client.delete(f'/users/{user_on_db.id}', headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -134,7 +134,7 @@ def test_get_user_by_username_invalid_username_route(user_on_db, user_staff_on_d
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -142,7 +142,7 @@ def test_get_user_by_username_invalid_username_route(user_on_db, user_staff_on_d
 
     headers = {'Authorization': f'Bearer {access_token}'}
 
-    response = client.get('/user/jacare', headers=headers)
+    response = client.get('/users/jacare', headers=headers)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -155,7 +155,7 @@ def test_change_password_user_route(user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -169,7 +169,8 @@ def test_change_password_user_route(user_on_db):
         'new_password': 'Pass123!@',
     }
 
-    response = client.post('/user/change-password', json=body, headers=headers)
+    response = client.post('/users/change-password',
+                           json=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -182,7 +183,7 @@ def test_change_email_user_route(user_on_db):
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    response = client.post('/user/login', data=body, headers=headers)
+    response = client.post('/users/login', data=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -196,6 +197,6 @@ def test_change_email_user_route(user_on_db):
         'new_email': 'foo@bar.com',
     }
 
-    response = client.post('/user/change-email', json=body, headers=headers)
+    response = client.post('/users/change-email', json=body, headers=headers)
 
     assert response.status_code == status.HTTP_200_OK

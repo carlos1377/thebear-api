@@ -1,10 +1,11 @@
 from app.services.check_services import CheckServices
-from app.routes.deps import check_repository
+from app.routes.deps import check_repository, auth
 from fastapi.routing import APIRouter
 from app.schemas.check import Check
 from fastapi import Depends, Response, status
 
-router = APIRouter(prefix='/check')
+router = APIRouter(
+    prefix='/checks', dependencies=[Depends(auth)], tags=['Checks'])
 
 
 @router.post('/add')
@@ -19,14 +20,14 @@ def create_check(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.get('/{_id}')
+@router.get('/{id}')
 def get_check_by_id(
-    _id: int,
+    id: int,
     check_repository=Depends(check_repository)
 ):
     services = CheckServices(check_repository)
 
-    check = services.get_check(_id)
+    check = services.get_check(id)
 
     return check
 
@@ -42,26 +43,26 @@ def list_checks(
     return checks
 
 
-@router.put('/{_id}')
+@router.put('/{id}')
 def update_in_use_check(
-    _id: int,
+    id: int,
     check: Check,
     check_repository=Depends(check_repository)
 ):
     services = CheckServices(check_repository)
 
-    check_updated = services.update_in_use(_id, check)
+    check_updated = services.update_in_use(id, check)
 
     return check_updated
 
 
-@router.delete('/{_id}')
+@router.delete('/{id}')
 def delete_check(
-    _id: int,
+    id: int,
     check_repository=Depends(check_repository)
 ):
     services = CheckServices(check_repository)
 
-    services.delete_check(_id)
+    services.delete_check(id)
 
     return Response(status_code=status.HTTP_200_OK)

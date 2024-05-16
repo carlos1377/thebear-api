@@ -26,7 +26,7 @@ def calculate_cpf(cpf: str) -> str:
 
 class Client(BaseModel):
     name: str
-    number: str | None
+    number: str | None = None
     cpf: str
 
     @field_validator('number')

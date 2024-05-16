@@ -9,7 +9,7 @@ from app.routes.deps import oauth_scheme
 from sqlalchemy.orm import Session
 
 
-router = APIRouter(prefix='/user')
+router = APIRouter(prefix='/users', tags=['Users'])
 
 
 @router.post('/register')

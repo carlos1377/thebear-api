@@ -7,7 +7,7 @@ class Product(BaseModel):
     name: str
     slug: str
     price: float
-    description: str | None
+    description: str | None = None
     stock: int
 
     @field_validator('price')

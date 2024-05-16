@@ -17,7 +17,7 @@ def test_add_client_route(db_session):
         'cpf': '41683048091'
     }
 
-    response = client.post('/client/add', json=body)
+    response = client.post('/clients/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -30,7 +30,7 @@ def test_add_client_route(db_session):
 
 
 def test_list_client_route(clients_on_db):
-    response = client.get('/client')
+    response = client.get('/clients')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -47,7 +47,7 @@ def test_list_client_route(clients_on_db):
 def test_list_client_by_id_route(clients_on_db):
     _id = clients_on_db[1].id
 
-    response = client.get(f'/client/{_id}')
+    response = client.get(f'/clients/{_id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -70,7 +70,7 @@ def test_update_client_route(client_on_db):
         'cpf': '47545438078'
     }
 
-    response = client.put(f'/client/{_id}', json=body)
+    response = client.put(f'/clients/{_id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -87,6 +87,6 @@ def test_update_client_route(client_on_db):
 def test_delete_client_route(client_on_db):
     _id = client_on_db.id
 
-    response = client.delete(f'/client/{_id}')
+    response = client.delete(f'/clients/{_id}')
 
     assert response.status_code == status.HTTP_200_OK

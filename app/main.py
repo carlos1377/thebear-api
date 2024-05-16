@@ -9,7 +9,7 @@ from app.routes.user import router as user_router
 app = FastAPI()
 
 
-@app.get('/health-check')
+@app.get('/health-check', tags=['Health Check'])
 def route_test():
     return {'message': 'OK'}
 

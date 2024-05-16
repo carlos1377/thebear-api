@@ -27,7 +27,7 @@ def test_add_product_route(db_session):
         "category_slug": 'bar',
     }
 
-    response = client.post('/product/add', json=body)
+    response = client.post('/products/add', json=body)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -49,7 +49,7 @@ def test_add_product_route(db_session):
 
 
 def test_list_product_route(db_session, product_on_db, category_on_db):
-    response = client.get('/product/')
+    response = client.get('/products/')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -69,7 +69,7 @@ def test_list_product_route(db_session, product_on_db, category_on_db):
 def test_list_product_by_id_route(db_session, product_on_db, category_on_db):
     _id = product_on_db.id
 
-    response = client.get(f'/product/{_id}')
+    response = client.get(f'/products/{_id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -98,7 +98,7 @@ def test_update_product_route(product_on_db, category_on_db):
         "category_slug": category_on_db.slug
     }
 
-    response = client.put(f'/product/{id}', json=body)
+    response = client.put(f'/products/{id}', json=body)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -118,7 +118,7 @@ def test_update_product_route(product_on_db, category_on_db):
 def test_delete_product_route(product_on_db):
     _id = product_on_db.id
 
-    response = client.delete(f'/product/{_id}')
+    response = client.delete(f'/products/{_id}')
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -126,6 +126,6 @@ def test_delete_product_route(product_on_db):
 def test_delete_product_invalid_id_route():
     _id = -66
 
-    response = client.delete(f'/product/{_id}')
+    response = client.delete(f'/products/{_id}')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
