@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.user_repository import SAUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import SAUserRepository
 from app.schemas.user import User, TokenData, UserLogin, UserOutput
 from fastapi.exceptions import HTTPException
 from app.db.models import User as UserModel
