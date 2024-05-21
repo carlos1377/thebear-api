@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.check_repository import SACheckRepository
+from app.repositories.sqlalchemy.check_repository import DBCheckRepository
 from app.db.models import Check as CheckModel
 from fastapi.exceptions import HTTPException
 from app.schemas.check import Check, CheckOutput
@@ -6,7 +6,7 @@ from fastapi import status
 
 
 class CheckServices():
-    def __init__(self, repository: SACheckRepository) -> None:
+    def __init__(self, repository: DBCheckRepository) -> None:
         self.repository = repository
 
     def add_check(self, check: Check):

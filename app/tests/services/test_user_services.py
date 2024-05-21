@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.user_repository import SAUserRepository  # noqa
+from app.repositories.sqlalchemy.user_repository import DBUserRepository  # noqa
 from app.services.user_services import UserServices
 from fastapi.exceptions import HTTPException
 from app.schemas.user import User, UserLogin
@@ -23,7 +23,7 @@ def test_register_user_service(db_session):
     user = User(username='carlos', password='pass123!',
                 email='carlos@email.com', is_staff=False)
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -45,7 +45,7 @@ def test_register_user_already_exists_username_service(db_session):
     user2 = User(username='carlos', password='pass12342323!',
                  email='foo@bar.com', is_staff=False)
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -61,7 +61,7 @@ def test_register_user_already_exists_username_service(db_session):
 def test_login_user_service(db_session, user_on_db):
     user = UserLogin(username='foo', password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -74,7 +74,7 @@ def test_login_user_service(db_session, user_on_db):
 def test_login_user_invalid_username_service(db_session, user_on_db):
     user = UserLogin(username='carlos', password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -84,7 +84,7 @@ def test_login_user_invalid_username_service(db_session, user_on_db):
 
 def test_login_user_invalid_password_service(db_session, user_on_db):
     user = UserLogin(username='foo', password='pass123')
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -93,7 +93,7 @@ def test_login_user_invalid_password_service(db_session, user_on_db):
 
 
 def test_verify_token_user_service(db_session, user_on_db):
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -108,7 +108,7 @@ def test_verify_token_user_service(db_session, user_on_db):
 
 
 def test_verify_token_invalid_token_user_service(db_session, user_on_db):
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -127,7 +127,7 @@ def test_delete_user_service(db_session, user_on_db, user_staff_on_db):
     user_staff = UserLogin(
         username=user_staff_on_db.username, password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -146,7 +146,7 @@ def test_delete_user_invalid_user_service(
     user_staff = UserLogin(
         username=user_staff_on_db.username, password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -162,7 +162,7 @@ def test_delete_user_invalid_permission_service(
     user_on_db_login = UserLogin(
         username=user_on_db.username, password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -178,7 +178,7 @@ def test_get_user_by_username_user_service(
     user_staff = UserLogin(
         username=user_staff_on_db.username, password='pass123!')
 
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -197,7 +197,7 @@ def test_get_user_by_username_user_service(
 
 
 def test_get_user_by_username_invalid_username_user_service(db_session, user_staff_on_db):
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
 
     services = UserServices(repository)
 
@@ -211,7 +211,7 @@ def test_get_user_by_username_invalid_username_user_service(db_session, user_sta
 
 
 def test_update_password_user_service(db_session, user_on_db):
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
     services = UserServices(repository)
 
     user = UserLogin(
@@ -231,7 +231,7 @@ def test_update_password_user_service(db_session, user_on_db):
 
 
 def test_update_email_user_service(db_session, user_on_db):
-    repository = SAUserRepository(db_session)
+    repository = DBUserRepository(db_session)
     services = UserServices(repository)
 
     user = UserLogin(

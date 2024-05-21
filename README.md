@@ -46,6 +46,8 @@ Para rodar o projeto usando containers do docker execute os seguintes comandos
 cd thebear-api # Para entrar no diretório do projeto
 
 docker-compose up # Pull das imagens e build dos serviços
+
+docker-compose run --user 1000 bear sh -c "alembic upgrade heads" # Para aplicar as migrações ao banco
 ```
 Após o Build do Docker e a inicialização do Uvicorn, execute o comando `curl http://localhost:8000/health-check` caso você tenha o Curl instalado, ou por meio de uma ferramenta de requisições para APIs como [Postman](https://www.postman.com/downloads/) ou [Insomnia](https://insomnia.rest/download) para a rota descrita acima (`http://localhost:8000/health-check`). Se tudo estiver correto, a requisição deve retornar `{"message":"OK"}`.
 
@@ -62,7 +64,7 @@ Se você modificar o projeto e quiser ter certeza que tudo está funcionando, ex
 ```bash
 docker ps # Vai nos retornar o ID dos container que estão UP
 
-# Certifique-se se trocar {YOUR_CONTAINER_ID} pelos 4 primeiros digitos do ID do container Bear
+# Certifique-se de trocar {YOUR_CONTAINER_ID} pelos 4 primeiros digitos do ID do container Bear
 docker exec -it {YOUR_CONTAINER_ID} bash
 ```
 
@@ -71,7 +73,7 @@ Com isso estaremos usando o *bash* dentro do container Bear, para rodar os teste
 pytest
 ```
  
- Para mais informações sobre o uso do [Pytest](https://docs.pytest.org) considere consultar a documentação do mesmo.
+Para mais informações sobre o uso do [Pytest](https://docs.pytest.org) considere consultar a documentação do mesmo.
 
 ## 💻 Tecnologias usadas no projeto
 

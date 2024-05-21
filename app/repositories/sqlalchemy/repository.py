@@ -5,7 +5,7 @@ from app.repositories.base import Repository
 # TODO: UM REPOSITORIO PARA CADA MODEL
 
 
-class SQLAlchemyRepository(Repository):
+class DBRepository(Repository):
     def __init__(self, db_session: Session, model_service) -> None:
         self._db_session = db_session
         self._model_service = model_service
@@ -18,10 +18,12 @@ class SQLAlchemyRepository(Repository):
             self._model_service).filter_by(id=_id).one_or_none()
         return _object
 
-    def save(self, _object) -> None:
+    def save(self, _object):
         self._db_session.add(_object)
         self._db_session.commit()
         self._db_session.refresh(_object)
+
+        return _object.id
 
     def remove(self, _object) -> None:
         self._db_session.delete(_object)

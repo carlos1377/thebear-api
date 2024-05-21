@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.repository import SQLAlchemyRepository
+from app.repositories.sqlalchemy.repository import DBRepository
 from app.db.models import OrderItem as OrderItemModel
 from app.db.models import Category as CategoryModel
 from app.db.models import Product as ProductModel
@@ -7,7 +7,7 @@ from app.db.models import Check as CheckModel
 from sqlalchemy.orm import Session
 
 
-class SAOrderRepository(SQLAlchemyRepository):
+class DBOrderRepository(DBRepository):
     def __init__(self, db_session: Session) -> None:
         self._db_session = db_session
         self._model_service = OrderModel

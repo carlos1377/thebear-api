@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.repository import SQLAlchemyRepository
+from app.repositories.sqlalchemy.repository import DBRepository
 from app.db.models import Client as ClientModel
 from app.services.client_services import ClientServices
 from app.schemas.client import Client
@@ -13,7 +13,7 @@ def test_add_client_service(db_session):
         cpf='41683048091'
     )
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     services.add_client(client)
@@ -32,7 +32,7 @@ def test_add_client_service(db_session):
 
 def test_list_client_service(db_session, clients_on_db):
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     clients = services.list_clients()
@@ -44,7 +44,7 @@ def test_list_client_service(db_session, clients_on_db):
 
 def test_list_client_by_id_service(db_session, clients_on_db):
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     client = services.list_clients(clients_on_db[0].id)
@@ -55,7 +55,7 @@ def test_list_client_by_id_service(db_session, clients_on_db):
 
 def test_list_client_by_id_invalid_id_service(db_session):
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     with pytest.raises(HTTPException):
@@ -68,7 +68,7 @@ def test_update_client_service(db_session, client_on_db):
     client = Client(name='Foo Bar',
                     number='(22) 99315-8556', cpf='07751005874')
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     services.update_client(_id, client)
@@ -84,7 +84,7 @@ def test_delete_client_service(db_session, client_on_db):
 
     _id = client_on_db.id
 
-    repository = SQLAlchemyRepository(db_session, ClientModel)
+    repository = DBRepository(db_session, ClientModel)
     services = ClientServices(repository)
 
     services.delete_client(_id)

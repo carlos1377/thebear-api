@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.user_repository import SAUserRepository
+from app.repositories.sqlalchemy.user_repository import DBUserRepository
 from app.schemas.user import User, TokenData, UserLogin, UserOutput
 from fastapi.exceptions import HTTPException
 from app.db.models import User as UserModel
@@ -18,7 +18,7 @@ brazilian_timezone = pytz.timezone('America/Sao_Paulo')
 
 
 class UserServices:
-    def __init__(self, repository: SAUserRepository) -> None:
+    def __init__(self, repository: DBUserRepository) -> None:
         self.repository = repository
 
     def register_user(self, user: User):

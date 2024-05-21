@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.check_repository import SACheckRepository
+from app.repositories.sqlalchemy.check_repository import DBCheckRepository
 from app.services.check_services import CheckServices
 from fastapi.exceptions import HTTPException
 from app.schemas.check import Check
@@ -6,7 +6,7 @@ import pytest
 
 
 def test_check_add_services(db_session):
-    repository = SACheckRepository(db_session)
+    repository = DBCheckRepository(db_session)
     services = CheckServices(repository)
 
     check = Check(in_use=False)
@@ -21,7 +21,7 @@ def test_check_add_services(db_session):
 
 
 def test_check_get_services(db_session, check_on_db):
-    repository = SACheckRepository(db_session)
+    repository = DBCheckRepository(db_session)
     services = CheckServices(repository)
 
     check = services.get_check(check_on_db.id)
@@ -33,7 +33,7 @@ def test_check_get_services(db_session, check_on_db):
 
 
 def test_check_list_all_services(db_session, checks_on_db):
-    repository = SACheckRepository(db_session)
+    repository = DBCheckRepository(db_session)
     services = CheckServices(repository)
 
     checks = services.get_check()
@@ -45,7 +45,7 @@ def test_check_list_all_services(db_session, checks_on_db):
 
 
 def test_check_update_services(db_session, check_on_db):
-    repository = SACheckRepository(db_session)
+    repository = DBCheckRepository(db_session)
     services = CheckServices(repository)
 
     check = Check(in_use=True)
@@ -59,7 +59,7 @@ def test_check_update_services(db_session, check_on_db):
 
 
 def test_check_delete_services(db_session, checks_on_db):
-    repository = SACheckRepository(db_session)
+    repository = DBCheckRepository(db_session)
     services = CheckServices(repository)
 
     services.delete_check(checks_on_db[0].id)

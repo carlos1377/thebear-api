@@ -1,18 +1,23 @@
+from app.repositories.sqlalchemy.repository import DBRepository
 from fastapi.exceptions import HTTPException
 from app.db.models import Client as ClientModel
-from app.schemas.client import Client
+from app.schemas.client import Client, ClientOutput
 from fastapi import status
-from app.repositories.base import Repository
 
 
 class ClientServices:
-    def __init__(self, repository: Repository) -> None:
+    def __init__(self, repository: DBRepository) -> None:
         self.repository = repository  # Instancia o repositório
+
+    def generate_output(self, id: int, client: Client) -> ClientOutput:
+        return ClientOutput(id=id, **client.model_dump())
 
     def add_client(self, client: Client):
         client_model = ClientModel(**client.model_dump())
 
-        self.repository.save(client_model)
+        id_client = self.repository.save(client_model)
+
+        return self.generate_output(id_client, client)
 
     def list_clients(self, _id: int | None = None):
         if _id is None:

@@ -22,3 +22,7 @@ class Repository(ABC):
     @abstractmethod
     def update_object(self, _id, _object_dump):
         raise NotImplementedError
+
+    @abstractmethod
+    def find_first(self):
+        raise NotImplementedError

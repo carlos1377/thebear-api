@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.order_repository import SAOrderRepository
+from app.repositories.sqlalchemy.order_repository import DBOrderRepository
 from app.services.order_services import OrderServices, OrderItemServices
 from app.schemas.order import Order, OrderPartial, OrderItemInput
 from fastapi.exceptions import HTTPException
@@ -7,7 +7,7 @@ import pytest
 
 def test_create_order_services(db_session, check_on_db):
     _id_check_db = check_on_db.id
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
 
     order = Order(status=0, check_id=_id_check_db)
@@ -27,7 +27,7 @@ def test_create_order_services(db_session, check_on_db):
 def test_update_order_services(db_session, order_on_db):
     order = Order(status=1, check_id=order_on_db.check_id)
 
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
 
     order_updated = services.update_order(order_on_db.id, order)
@@ -41,14 +41,14 @@ def test_update_order_services(db_session, order_on_db):
 def test_update_order_invalid_id_order_services(db_session, order_on_db):
     order = Order(status=1, check_id=order_on_db.check_id)
 
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
     with pytest.raises(HTTPException):
         services.update_order(2, order)
 
 
 def test_delete_order_services(db_session, order_on_db):
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
 
     services.delete_order(order_on_db.id)
@@ -59,7 +59,7 @@ def test_delete_order_services(db_session, order_on_db):
 
 
 def test_partial_update_order_services(db_session, order_on_db):
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
 
     new_status = OrderPartial(status=1)
@@ -72,7 +72,7 @@ def test_partial_update_order_services(db_session, order_on_db):
 def test_create_order_item_order_services(
     db_session, product_on_db, order_on_db
 ):
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderItemServices(repository)
 
     order_item = OrderItemInput(product_id=product_on_db.id, quantity=1)
@@ -90,7 +90,7 @@ def test_create_order_item_order_services(
 
 
 def test_get_order_items_order_services(db_session, order_items_on_db):
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderItemServices(repository)
 
     order_item_frst = services.get_order_items(order_items_on_db[0].order_id)
@@ -101,7 +101,7 @@ def test_get_order_items_order_services(db_session, order_items_on_db):
 
 
 def test_get_all_orders_services(db_session, order_items_on_db):
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderServices(repository)
 
     orders = services.get_all_orders()
@@ -115,7 +115,7 @@ def test_get_all_orders_services(db_session, order_items_on_db):
 
 def test_update_quantity_order_item_services(db_session, order_item_on_db):
     order_id, product_id = order_item_on_db.order_id, order_item_on_db.product_id  # noqa
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderItemServices(repository)
 
     order_item = services.update_quantity_order_item(order_id, product_id, 9)
@@ -130,7 +130,7 @@ def test_update_quantity_order_item_services(db_session, order_item_on_db):
 
 def test_delete_order_item_services(db_session, order_item_on_db):
     order_id, product_id = order_item_on_db.order_id, order_item_on_db.product_id  # noqa
-    repository = SAOrderRepository(db_session)
+    repository = DBOrderRepository(db_session)
     services = OrderItemServices(repository)
 
     order_item_deleted = services.delete_order_item(order_id, product_id)

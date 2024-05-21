@@ -1,4 +1,4 @@
-from app.repositories.sqlalchemy.order_repository import SAOrderRepository
+from app.repositories.sqlalchemy.order_repository import DBOrderRepository
 from app.schemas.order import (
     Order, OrderPartial, OrderItemInput, OrderOutput, OrderItem
 )
@@ -20,7 +20,7 @@ def format_date(date_time):
 
 
 class OrdersSerializers:
-    def __init__(self, repository: SAOrderRepository) -> None:
+    def __init__(self, repository: DBOrderRepository) -> None:
         self.repository = repository
 
     def _serialize_order_item(self, order_item_in: OrderItemInput) -> OrderItem:  # noqa
@@ -55,7 +55,7 @@ class OrdersSerializers:
 
 
 class OrderServices:
-    def __init__(self, repository: SAOrderRepository) -> None:
+    def __init__(self, repository: DBOrderRepository) -> None:
         self.repository = repository
         self.serializer = OrdersSerializers(repository)
 
@@ -115,7 +115,7 @@ class OrderServices:
 
 
 class OrderItemServices:
-    def __init__(self, repository: SAOrderRepository) -> None:
+    def __init__(self, repository: DBOrderRepository) -> None:
         self.repository = repository
         self.serializer = OrdersSerializers(repository)
 

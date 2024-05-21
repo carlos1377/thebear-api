@@ -21,9 +21,18 @@ def test_add_client_route(db_session):
 
     assert response.status_code == status.HTTP_201_CREATED
 
+    data = response.json()
+
     client_on_db = db_session.query(ClientModel).one_or_none()
 
     assert client_on_db is not None
+
+    assert data == {
+        'id': client_on_db.id,
+        'name': body['name'],
+        'number': body['number'],
+        'cpf': body['cpf']
+    }
 
     db_session.delete(client_on_db)
     db_session.commit()
