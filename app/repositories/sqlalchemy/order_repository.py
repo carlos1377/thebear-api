@@ -37,3 +37,8 @@ class DBOrderRepository(DBRepository):
         for _object in _list:
             self._db_session.delete(_object)
         self._db_session.commit()
+
+    def save(self, _object):
+        self._db_session.add(_object)
+        self._db_session.commit()
+        self._db_session.refresh(_object)
