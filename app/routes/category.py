@@ -1,8 +1,9 @@
+from app.repositories.sqlalchemy.category_repository import DBCategoryRepository  # noqa
+from app.services.category_services import CategoryServices
 from fastapi import APIRouter, Depends, Response, status
+from app.routes.deps import auth, get_db_session
 from app.schemas.category import Category
 from sqlalchemy.orm import Session
-from app.routes.deps import auth, get_db_session
-from app.services.category_services import CategoryServices
 
 router = APIRouter(prefix='/categories',
                    dependencies=[Depends(auth)], tags=['Categories'])
@@ -12,7 +13,8 @@ router = APIRouter(prefix='/categories',
 def add_category(
     category: Category, db_session: Session = Depends(get_db_session)
 ):
-    service = CategoryServices(db_session=db_session)
+    repository = DBCategoryRepository(db_session)
+    service = CategoryServices(repository)
 
     service.add_category(category=category)
 
@@ -23,7 +25,8 @@ def add_category(
 def list_categories(
     db_session: Session = Depends(get_db_session)
 ):
-    service = CategoryServices(db_session=db_session)
+    repository = DBCategoryRepository(db_session)
+    service = CategoryServices(repository)
 
     categories = service.list_categories()
 
@@ -35,7 +38,8 @@ def list_categories_by_id(
     id: int,
     db_session: Session = Depends(get_db_session)
 ):
-    service = CategoryServices(db_session=db_session)
+    repository = DBCategoryRepository(db_session)
+    service = CategoryServices(repository)
 
     category = service.list_categories(id=id)
 
@@ -47,7 +51,8 @@ def delete_category(
     id: int,
     db_session: Session = Depends(get_db_session)
 ):
-    service = CategoryServices(db_session)
+    repository = DBCategoryRepository(db_session)
+    service = CategoryServices(repository)
 
     service.delete_category(id=id)
 
@@ -60,7 +65,8 @@ def update_category(
     id: int,
     db_session: Session = Depends(get_db_session)
 ):
-    service = CategoryServices(db_session)
+    repository = DBCategoryRepository(db_session)
+    service = CategoryServices(repository)
 
     service.update_category(id=id, category=category)
 

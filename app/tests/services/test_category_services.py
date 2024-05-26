@@ -1,10 +1,13 @@
+from app.repositories.sqlalchemy.category_repository import DBCategoryRepository  # noqa
 from app.services.category_services import CategoryServices
-from app.schemas.category import Category
 from app.db.models import Category as CategoryModel
+from app.schemas.category import Category
 
 
 def test_category_add_service(db_session):
-    service = CategoryServices(db_session)
+    repository = DBCategoryRepository(db_session)
+
+    service = CategoryServices(repository)
 
     category = Category(
         name='Destilado',
@@ -24,7 +27,9 @@ def test_category_add_service(db_session):
 
 
 def test_list_category_service(db_session, categories_on_db):
-    service = CategoryServices(db_session)
+    repository = DBCategoryRepository(db_session)
+
+    service = CategoryServices(repository)
 
     categories = service.list_categories()
 
@@ -36,7 +41,9 @@ def test_list_category_service(db_session, categories_on_db):
 def test_list_category_by_id_service(db_session, categories_on_db):
     category_id = categories_on_db[0].id
 
-    service = CategoryServices(db_session)
+    repository = DBCategoryRepository(db_session)
+
+    service = CategoryServices(repository)
 
     category = service.list_categories(id=category_id)
 
@@ -50,7 +57,9 @@ def test_delete_category_service(db_session):
     db_session.add(category_model)
     db_session.commit()
 
-    service = CategoryServices(db_session=db_session)
+    repository = DBCategoryRepository(db_session)
+
+    service = CategoryServices(repository)
 
     service.delete_category(id=category_model.id)
 
@@ -66,7 +75,9 @@ def test_update_category_service(db_session):
 
     category_id = db_session.query(CategoryModel).first().id
 
-    service = CategoryServices(db_session=db_session)
+    repository = DBCategoryRepository(db_session)
+
+    service = CategoryServices(repository)
 
     new_category = Category(name='Bebida', slug='bebida')
 

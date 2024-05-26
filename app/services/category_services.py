@@ -1,53 +1,56 @@
-from app.schemas.category import Category
-from sqlalchemy.orm import Session
+from app.repositories.sqlalchemy.category_repository import DBCategoryRepository  # noqa
+from app.schemas.category import Category, CategoryOutput
 from app.db.models import Category as CategoryModel
 from fastapi.exceptions import HTTPException
 from fastapi import status
 
 
 class CategoryServices:
-    # TODO: REFATORAR PARA USAR DBSERVICES
-    def __init__(self, db_session: Session) -> None:
-        self.db_session = db_session
+    def __init__(self, repository: DBCategoryRepository) -> None:
+        self.repository = repository
 
-    def _find_by_id_or_404(self, id: int) -> Category | None:
-        category = self.db_session.query(
-            CategoryModel).filter_by(id=id).first()
+    def generate_output(self, id: int, client: Category) -> CategoryOutput:
+        return CategoryOutput(id=id, **client.model_dump())
 
-        if category is None:
+    def _if_none_404(self, value, _id: int, model: str = 'Category'):
+        if value is None:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f'Category {id} not found',
+                detail=f'{model} {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
             )
 
-        return category
-
-    def add_category(self, category: Category) -> None:
+    def add_category(self, category: Category):
         category_model = CategoryModel(**category.model_dump())
 
-        self.db_session.add(category_model)
-        self.db_session.commit()
+        id_category = self.repository.save(category_model)
+
+        return self.generate_output(id_category, category)
 
     def list_categories(self, id: int | None = None) -> list | Category | None:
         if id is None:
-            categories_on_db = self.db_session.query(CategoryModel).all()
+            categories_on_db = self.repository.get_all()
             return categories_on_db
 
-        category_on_db = self._find_by_id_or_404(id)
+        category_on_db = self.repository.id_one_or_none(id)
+        self._if_none_404(category_on_db, id)
+
         return category_on_db
 
     def delete_category(self, id: int) -> None:
-        category_on_db = self._find_by_id_or_404(id)
+        category_on_db = self.repository.id_one_or_none(id)
+        self._if_none_404(category_on_db, id)
 
-        self.db_session.delete(category_on_db)
-        self.db_session.commit()
+        self.repository.remove(category_on_db)
+
+        return category_on_db
 
     def update_category(self, id: int, category: Category):
-        category_on_db = self._find_by_id_or_404(id=id)
+        category_dump = category.model_dump()
 
-        if category_on_db is not None:
-            category_on_db.name = category.name
-            category_on_db.slug = category.slug
+        self._if_none_404(self.repository.id_one_or_none(id), id)
 
-        self.db_session.add(category_on_db)
-        self.db_session.commit()
+        self.repository.update_object(id, category_dump)
+
+        category_dump['id'] = id
+
+        return category_dump
