@@ -8,7 +8,7 @@ from app.db.connection import Session
 from fastapi import Depends
 import os
 
-oauth_scheme = OAuth2PasswordBearer(tokenUrl='/user/login')
+oauth_scheme = OAuth2PasswordBearer(tokenUrl='/users/login')
 
 TEST_MODE = bool(int(os.environ.get('TEST_MODE', 0)))
 

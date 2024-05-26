@@ -55,6 +55,8 @@ Sendo a principal tecnologia usada nesse projeto o [FastAPI](https://fastapi.tia
 
 Atualmente estou trabalhando em também em uma documentação providenciada pela [Scalar](https://docs.scalar.com), como possivelmente sendo o meio principal de documentação de rotas do **The Bear** futuramente.
 
+Para utilização das rotas, será necessário ter um Token do tipo Bearer no cabeçalho da requisição, caso você esteja no modo de *teste* apenas adicione um header Bearer com qualquer conteúdo dentro para passar da autenticação. Caso não esteja no modo *teste* utilize as rotas de Login e Register dos endpoints Users descritos na documentação para utilização da API.
+
 ## 🚧 Testes
 
 Se você modificar o projeto e quiser ter certeza que tudo está funcionando, execute os testes do Pytest usando o Docker. Podemos fazer isso com o seguinte comando 
@@ -70,7 +72,6 @@ Com isso estaremos usando o *bash* dentro do container Bear, para rodar os teste
 ```bash
 pytest
 ```
- 
 Para mais informações sobre o uso do [Pytest](https://docs.pytest.org) considere consultar a documentação do mesmo.
 
 ## 💻 Tecnologias usadas no projeto
