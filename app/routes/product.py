@@ -1,8 +1,9 @@
+from app.repositories.sqlalchemy.product_repository import DBProductRepository
+from app.services.product_services import ProductServices
 from fastapi import APIRouter, Depends, Response, status
-from sqlalchemy.orm import Session
 from app.routes.deps import auth, get_db_session
 from app.schemas.product import ProductInput
-from app.services.product_services import ProductServices
+from sqlalchemy.orm import Session
 
 
 router = APIRouter(prefix='/products',
@@ -14,7 +15,8 @@ def add_product(
     product: ProductInput,
     db_session: Session = Depends(get_db_session)
 ):
-    services = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    services = ProductServices(repository)
 
     services.add_product(product=product)
 
@@ -26,7 +28,8 @@ def list_products_by_id(
     id: int,
     db_session: Session = Depends(get_db_session)
 ):
-    services = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    services = ProductServices(repository)
 
     products = services.list_products(id)
 
@@ -37,7 +40,8 @@ def list_products_by_id(
 def list_products(
     db_session: Session = Depends(get_db_session)
 ):
-    services = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    services = ProductServices(repository)
 
     products = services.list_products()
 
@@ -50,7 +54,8 @@ def update_product(
     product: ProductInput,
     db_session: Session = Depends(get_db_session)
 ):
-    services = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    services = ProductServices(repository)
 
     product_updated = services.update_product(id, product)
 
@@ -62,7 +67,8 @@ def delete_product(
     id: int,
     db_session: Session = Depends(get_db_session)
 ):
-    services = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    services = ProductServices(repository)
 
     services.delete_product(id)
 

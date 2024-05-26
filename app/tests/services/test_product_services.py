@@ -1,3 +1,4 @@
+from app.repositories.sqlalchemy.product_repository import DBProductRepository
 from app.schemas.product import ProductInput
 from app.db.models import Product as ProductModel
 from app.services.product_services import ProductServices
@@ -9,7 +10,8 @@ def test_add_product_service(db_session, category_on_db):
         description='uma boa cerveja!', category_slug=category_on_db.slug
     )
 
-    service = ProductServices(db_session)
+    repository = DBProductRepository(db_session)
+    service = ProductServices(repository)
 
     service.add_product(product)
 
@@ -30,7 +32,8 @@ def test_add_product_service(db_session, category_on_db):
 
 
 def test_list_product_services(db_session, product_on_db):
-    service = ProductServices(db_session)
+    repository = DBProductRepository(db_session)
+    service = ProductServices(repository)
 
     product = service.list_products()
 
@@ -42,7 +45,8 @@ def test_list_product_services(db_session, product_on_db):
 def test_list_product_by_id_services(db_session, product_on_db):
     _id = product_on_db.id
 
-    service = ProductServices(db_session)
+    repository = DBProductRepository(db_session)
+    service = ProductServices(repository)
 
     product = service.list_products(_id)
 
@@ -57,7 +61,8 @@ def test_update_product_services(db_session, product_on_db, category_on_db):
         description='polar dos guri', category_slug=category_on_db.slug
     )
 
-    service = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    service = ProductServices(repository)
 
     service.update_product(product_on_db.id, new_product)
 
@@ -70,7 +75,8 @@ def test_update_product_services(db_session, product_on_db, category_on_db):
 
 
 def test_delete_product_services(db_session, product_on_db):
-    service = ProductServices(db_session=db_session)
+    repository = DBProductRepository(db_session)
+    service = ProductServices(repository)
 
     service.delete_product(product_on_db.id)
 

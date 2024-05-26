@@ -106,12 +106,16 @@ def test_update_product_route(product_on_db, category_on_db):
 
     assert data == {
         "id": id,
-        "name": 'Rock Stone',
-        "slug": 'rock-stone',
-        "price": 14.99,
-        "stock": 5,
-        "description": None,
-        "category_id": category_on_db.id
+        "name": body['name'],
+        "slug": body['slug'],
+        "price": body['price'],
+        "stock": body['stock'],
+        "description": body['description'],
+        "category": {
+            "id": category_on_db.id,
+            "name": category_on_db.name,
+            "slug": category_on_db.slug
+        }
     }
 
 

@@ -1,80 +1,61 @@
-from app.schemas.product import Product, ProductInput, ProductOutput
-from sqlalchemy.orm import Session
+from app.repositories.sqlalchemy.product_repository import DBProductRepository
+from app.schemas.product import ProductInput, ProductOutput
 from app.db.models import Product as ProductModel
-from app.db.models import Category as CategoryModel
 from fastapi.exceptions import HTTPException
 from fastapi import status
 
 
 class ProductServices:
-    # TODO: REFATORAR PARA USAR DBSERVICES
-    def __init__(self, db_session: Session) -> None:
-        self.db_session = db_session
+    def __init__(self, repository: DBProductRepository) -> None:
+        self.repository = repository
 
-    def _find_category_by_slug_or_404(self, slug: str):
-        category = self.db_session.query(
-            CategoryModel).filter_by(slug=slug).first()
-
-        if category is None:
+    def _if_none_404(self, value, _id: int, model: str = 'Product'):
+        if value is None:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f'Category {slug} not found',
+                detail=f'{model} {_id} not found',
+                status_code=status.HTTP_404_NOT_FOUND
             )
-
-        return category
 
     def add_product(self, product: ProductInput) -> None:
-        category = self._find_category_by_slug_or_404(product.category_slug)
+        category = self.repository._find_category_by_slug(
+            product.category_slug)
+        self._if_none_404(category, category.id)
 
         product_model = ProductModel(
-            **product.model_dump(exclude={'category_slug'}))
-        product_model.category_id = category.id
+            **product.model_dump(exclude={'category_slug'}),
+            category_id=category.id)
 
-        self.db_session.add(product_model)
-        self.db_session.commit()
-        self.db_session.refresh(product_model)
+        self.repository.save(product_model)
 
-    def list_products(self, _id: int | None = None) -> list[ProductModel] | ProductModel:
+    def list_products(self, _id: int | None = None) -> list | ProductModel:
         if _id is None:
-            products_on_db = self.db_session.query(ProductModel).all()
+            products_on_db = self.repository.get_all()
             return products_on_db
-        product_on_db = self.db_session.query(
-            ProductModel).filter_by(id=_id).first()
+
+        product_on_db = self.repository.id_one_or_none(_id)
+        self._if_none_404(product_on_db, _id)
 
         return product_on_db
 
-    def update_product(self, id: int, product: ProductInput) -> ProductOutput:
-        product_on_db = self.db_session.query(
-            ProductModel).filter_by(id=id).one_or_none()
+    def update_product(self, _id: int, product: ProductInput):
+        product_on_db = self.repository.id_one_or_none(_id)
+        self._if_none_404(product_on_db, _id)
 
-        if product_on_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f'Product {id} not found')
+        product_dump = product.model_dump()
 
-        category = self._find_category_by_slug_or_404(product.category_slug)
+        category = self.repository._find_category_by_slug(
+            product.category_slug)
 
-        product_on_db.name = product.name
-        product_on_db.slug = product.slug
-        product_on_db.description = product.description
-        product_on_db.price = product.price
-        product_on_db.stock = product.stock
-        product_on_db.category_id = category.id
+        self.repository.update_object(_id, product_dump)
 
-        self.db_session.add(product_on_db)
-        self.db_session.commit()
-        self.db_session.refresh(product_on_db)
-
-        return product_on_db
+        product_output = ProductOutput(
+            **product.model_dump(exclude={'category_slug'}),
+            id=product_on_db.id, category=category
+        )
+        return product_output
 
     def delete_product(self, _id: int) -> None:
-        product_on_db = self.db_session.query(
-            ProductModel).filter_by(id=_id).one_or_none()
+        product_on_db = self.repository.id_one_or_none(_id)
+        self._if_none_404(product_on_db, _id)
 
-        if product_on_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f'Product {_id} not found'
-            )
-        self.db_session.delete(product_on_db)
-        self.db_session.commit()
+        self.repository.remove(product_on_db)
