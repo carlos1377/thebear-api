@@ -1,10 +1,11 @@
 from app.repositories.sqlalchemy.user_repository import DBUserRepository  # noqa
 from app.schemas.user import (
-    FormChangeEmail, User, UserLogin, FormChangePassword)
+    FormChangeEmail, User, UserLogin, FormChangePassword
+)
 from fastapi import APIRouter, Response, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services.user_services import UserServices
-from app.routes.deps import get_db_session
+from app.routes.deps import get_db_session, auth
 from app.routes.deps import oauth_scheme
 from sqlalchemy.orm import Session
 
@@ -45,7 +46,7 @@ def user_login(
     return token_data
 
 
-@router.delete('/{user_id}')
+@router.delete('/{user_id}', dependencies=[Depends(auth)])
 def delete_user(
     user_id: int,
     db_session: Session = Depends(get_db_session),
@@ -60,7 +61,7 @@ def delete_user(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.get('/{username}')
+@router.get('/{username}', dependencies=[Depends(auth)])
 def get_user_by_username(
     username: str,
     db_session: Session = Depends(get_db_session),
@@ -76,7 +77,7 @@ def get_user_by_username(
     return user
 
 
-@router.post('/change-password')
+@router.post('/change-password', dependencies=[Depends(auth)])
 def change_password(
     form: FormChangePassword,
     db_session: Session = Depends(get_db_session),
@@ -91,7 +92,7 @@ def change_password(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.post('/change-email')
+@router.post('/change-email', dependencies=[Depends(auth)])
 def change_email(
     form: FormChangeEmail,
     db_session: Session = Depends(get_db_session),
