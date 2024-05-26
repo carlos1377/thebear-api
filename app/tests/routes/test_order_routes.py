@@ -59,7 +59,7 @@ def test_update_order_invalid_id_order_route(order_on_db, check_on_db):
         'check_id': check_on_db.id
     }
 
-    response = client.put('/orders/3', json=body)
+    response = client.put('/orders/0', json=body)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 

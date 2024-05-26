@@ -46,8 +46,6 @@ Para rodar o projeto usando containers do docker execute os seguintes comandos
 cd thebear-api # Para entrar no diretório do projeto
 
 docker-compose up # Pull das imagens e build dos serviços
-
-docker-compose run --user 1000 bear sh -c "alembic upgrade heads" # Para aplicar as migrações ao banco
 ```
 Após o Build do Docker e a inicialização do Uvicorn, execute o comando `curl http://localhost:8000/health-check` caso você tenha o Curl instalado, ou por meio de uma ferramenta de requisições para APIs como [Postman](https://www.postman.com/downloads/) ou [Insomnia](https://insomnia.rest/download) para a rota descrita acima (`http://localhost:8000/health-check`). Se tudo estiver correto, a requisição deve retornar `{"message":"OK"}`.
 

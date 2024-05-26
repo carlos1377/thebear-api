@@ -1,5 +1,11 @@
+networks:
+  my-app-network:
+
+
 services:
   bear:
+    networks:
+      - my-app-network
     build:
       context: .
     ports:
@@ -13,6 +19,8 @@ services:
       - mysql-test
 
   mysql:
+    networks:
+      - my-app-network
     container_name: mysql_db
     image: mysql
     ports:
@@ -25,12 +33,14 @@ services:
       - mysql_data:/var/lib/mysql
 
   mysql-test:
+    networks:
+      - my-app-network
     container_name: mysql_db_test
     image: mysql
     ports:
-      - 3307:3306
+      - 3308:3306
     expose:
-      - 3307
+      - 3308
     env_file:
       - ./.env
     volumes:
