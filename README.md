@@ -4,8 +4,8 @@
 <p align="center">
  <a href="#started">Getting Started</a> • 
   <a href="#routes">API Endpoints</a> •
- <a href="#colab">Collaborators</a> •
- <a href="#contribute">Contribute</a>
+ <a href="#tests">Tests</a> •
+ <a href="#tech">Technologies</a>
 </p>
 
 <p align="center">
@@ -49,15 +49,17 @@ docker-compose up # Pull das imagens e build dos serviços
 ```
 Após o Build do Docker e a inicialização do Uvicorn, execute o comando `curl http://localhost:8000/health-check` caso você tenha o Curl instalado, ou por meio de uma ferramenta de requisições para APIs como [Postman](https://www.postman.com/downloads/) ou [Insomnia](https://insomnia.rest/download) para a rota descrita acima (`http://localhost:8000/health-check`). Se tudo estiver correto, a requisição deve retornar `{"message":"OK"}`.
 
-## 🚩 Documentação de Rotas
+<h2 id="routes">🚩 Documentação de Rotas</h2>
 
 Sendo a principal tecnologia usada nesse projeto o [FastAPI](https://fastapi.tiangolo.com/) o framework proporciona uma "auto-documentação" das rotas da API, podendo ser acessado pelo seu navegador na rota `http://localhost:8000/docs`. 
 
 Atualmente estou trabalhando em também em uma documentação providenciada pela [Scalar](https://docs.scalar.com), como possivelmente sendo o meio principal de documentação de rotas do **The Bear** futuramente.
 
-Para utilização das rotas, será necessário ter um Token do tipo Bearer no cabeçalho da requisição, caso você esteja no modo de *teste* apenas adicione um header Bearer com qualquer conteúdo dentro para passar da autenticação. Caso não esteja no modo *teste* utilize as rotas de Login e Register dos endpoints Users descritos na documentação para utilização da API.
+### 🤖 Login e Tokens
 
-## 🚧 Testes
+Para utilização das rotas, será necessário ter um Token do tipo Bearer no cabeçalho da requisição, caso você esteja no modo de *teste* no seu .ENV (`TEST_MODE = 1`) apenas adicione um header Bearer com qualquer conteúdo dentro para passar da autenticação. Caso **NÃO** esteja no modo *teste* (`TEST_MODE = 0`) utilize as rotas de Login e Register dos endpoints Users descritos na documentação para utilização da API.
+
+<h2 id="tests">🚧 Testes</h2>
 
 Se você modificar o projeto e quiser ter certeza que tudo está funcionando, execute os testes do Pytest usando o Docker. Podemos fazer isso com o seguinte comando 
 
@@ -74,7 +76,7 @@ pytest
 ```
 Para mais informações sobre o uso do [Pytest](https://docs.pytest.org) considere consultar a documentação do mesmo.
 
-## 💻 Tecnologias usadas no projeto
+<h2 id="tech">💻 Tecnologias usadas no projeto</h2>
 
 - FastAPI
 - Poetry
