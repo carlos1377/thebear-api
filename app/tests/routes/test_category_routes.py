@@ -20,9 +20,17 @@ def test_add_category_route(db_session):
 
     assert response.status_code == status.HTTP_201_CREATED
 
+    data = response.json()
+
     category_on_db = db_session.query(CategoryModel).all()
 
     assert len(category_on_db) == 1
+
+    assert data == {
+        'id': category_on_db[0].id,
+        'name': body['name'],
+        'slug': body['slug'],
+    }
 
     db_session.delete(category_on_db[0])
     db_session.commit()
@@ -97,6 +105,14 @@ def test_update_category_route(db_session, category_on_db):
 
     updated_category_on_db = db_session.query(CategoryModel) \
         .filter_by(id=id).first()
+
+    data = response.json()
+
+    assert data == {
+        'id': id,
+        'name': body['name'],
+        'slug': body['slug']
+    }
 
     assert updated_category_on_db is not None
     assert updated_category_on_db.name == 'Foo'

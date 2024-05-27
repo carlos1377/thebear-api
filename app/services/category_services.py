@@ -24,7 +24,7 @@ class CategoryServices:
 
         id_category = self.repository.save(category_model)
 
-        return self.generate_output(id_category, category)
+        return self.generate_output(id_category, category).model_dump_json()
 
     def list_categories(self, id: int | None = None) -> list | Category | None:
         if id is None:
@@ -53,4 +53,4 @@ class CategoryServices:
 
         category_dump['id'] = id
 
-        return category_dump
+        return CategoryOutput(**category_dump).model_dump_json()
