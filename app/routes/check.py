@@ -1,14 +1,15 @@
 from app.services.check_services import CheckServices
 from app.routes.deps import check_repository, auth
+from app.schemas.check import Check, CheckOutput
 from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
-from app.schemas.check import Check
 
 router = APIRouter(
     prefix='/checks', dependencies=[Depends(auth)], tags=['Checks'])
 
 
-@router.post('/add')
+@router.post(
+    '/add', description='Create a check', response_model=CheckOutput)
 def create_check(
     check: Check | None,
     check_repository=Depends(check_repository)
@@ -25,7 +26,8 @@ def create_check(
     )
 
 
-@router.get('/{id}')
+@router.get(
+    '/{id}', description='List one check', response_model=CheckOutput)
 def get_check_by_id(
     id: int,
     check_repository=Depends(check_repository)
@@ -37,7 +39,8 @@ def get_check_by_id(
     return check
 
 
-@router.get('/')
+@router.get(
+    '/', description='List all checks', response_model=list[CheckOutput])
 def list_checks(
     check_repository=Depends(check_repository)
 ):
@@ -48,7 +51,8 @@ def list_checks(
     return checks
 
 
-@router.put('/{id}')
+@router.put(
+    '/{id}', description='Update a Check', response_model=CheckOutput)
 def update_in_use_check(
     id: int,
     check: Check,
@@ -61,7 +65,8 @@ def update_in_use_check(
     return check_updated
 
 
-@router.delete('/{id}')
+@router.delete(
+    '/{id}', description='Delete a check')
 def delete_check(
     id: int,
     check_repository=Depends(check_repository)

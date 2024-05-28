@@ -10,7 +10,7 @@ app = FastAPI(version='v0.1', title="The Bear API")
 
 
 @app.get('/health-check', tags=['Health Check'])
-def route_test():
+def health_check():
     return {'message': 'OK'}
 
 

@@ -1,6 +1,7 @@
 from app.services.order_services import OrderServices, OrderItemServices
 from app.schemas.order import (
-    Order, OrderPartial, OrderItemInput, OrderItemPartial
+    Order, OrderPartial, OrderItemInput, OrderItemPartial, OrderOutput,
+    OrderItem
 )
 from app.routes.deps import order_repository, auth
 from fastapi import Depends, Response, status
@@ -10,7 +11,8 @@ router = APIRouter(prefix='/orders',
                    dependencies=[Depends(auth)], tags=['Orders'])
 
 
-@router.post('/add')
+@router.post(
+    '/add', description='Create a order', response_model=OrderOutput)
 def create_order(
     order: Order,
     order_repository=Depends(order_repository)
@@ -23,7 +25,8 @@ def create_order(
                     status_code=status.HTTP_201_CREATED, media_type="json")
 
 
-@router.get('/{id}')
+@router.get(
+    '/{id}', description='List a order', response_model=OrderOutput)
 def get_order_output(
     id: int,
     order_repository=Depends(order_repository)
@@ -35,7 +38,8 @@ def get_order_output(
     return order_output
 
 
-@router.get('/')
+@router.get(
+    '/', description='List all orders', response_model=list[OrderOutput])
 def get_all_orders(
     order_repository=Depends(order_repository)
 ):
@@ -46,7 +50,8 @@ def get_all_orders(
     return orders
 
 
-@router.put('/{id}')
+@router.put(
+    '/{id}', description='Update a order', response_model=OrderOutput)
 def update_order(
     id: int,
     order: Order,
@@ -59,7 +64,8 @@ def update_order(
     return order_updated
 
 
-@router.patch('/{id}')
+@router.patch(
+    '/{id}', description='Partial update a order', response_model=OrderOutput)
 def partial_update_order(
     id: int,
     new_status: OrderPartial,
@@ -72,7 +78,7 @@ def partial_update_order(
     return order_updated
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', description='Delete a order')
 def delete_order(
     id: int,
     order_repository=Depends(order_repository)
@@ -84,7 +90,9 @@ def delete_order(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.post('/{id}/items')
+@router.post(
+    '/{id}/items', description='Create a order item',
+    response_model=OrderOutput)
 def create_order_item(
     id: int,
     order_item: OrderItemInput,
@@ -101,7 +109,9 @@ def create_order_item(
                     status_code=status.HTTP_201_CREATED, media_type="json")
 
 
-@router.get('/{id}/items')
+@router.get(
+    '/{id}/items', description='List all order item',
+    response_model=list[OrderItem])
 def get_order_items(
     id: int,
     order_repository=Depends(order_repository)
@@ -113,7 +123,9 @@ def get_order_items(
     return order_items
 
 
-@router.patch('/{order_id}/items/{product_id}')
+@router.patch(
+    '/{order_id}/items/{product_id}',
+    description='Update quantity on a order item', response_model=OrderItem)
 def update_quantity_order_item(
     order_id: int,
     product_id: int,
@@ -129,7 +141,9 @@ def update_quantity_order_item(
     return order_item
 
 
-@router.delete('/{order_id}/items/{product_id}')
+@router.delete(
+    '/{order_id}/items/{product_id}',
+    description='Delete a order item')
 def delete_order_item(
     order_id: int,
     product_id: int,

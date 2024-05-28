@@ -1,8 +1,8 @@
 from app.repositories.sqlalchemy.category_repository import DBCategoryRepository  # noqa
 from app.services.category_services import CategoryServices
+from app.schemas.category import Category, CategoryOutput
 from fastapi import APIRouter, Depends, Response, status
 from app.routes.deps import auth, get_db_session
-from app.schemas.category import Category
 from sqlalchemy.orm import Session
 
 
@@ -10,7 +10,8 @@ router = APIRouter(prefix='/categories',
                    dependencies=[Depends(auth)], tags=['Categories'])
 
 
-@router.post('/add', description='Add new category')
+@router.post(
+    '/add', description='Create a category', response_model=CategoryOutput)
 def add_category(
     category: Category, db_session: Session = Depends(get_db_session)
 ):
@@ -24,7 +25,9 @@ def add_category(
     )
 
 
-@router.get('/', description='List all categories')
+@router.get(
+    '/', description='List all categories',
+    response_model=list[CategoryOutput])
 def list_categories(
     db_session: Session = Depends(get_db_session)
 ):
@@ -36,7 +39,8 @@ def list_categories(
     return categories
 
 
-@router.get('/{id}', description='List one category')
+@router.get(
+    '/{id}', description='List one category', response_model=CategoryOutput)
 def list_categories_by_id(
     id: int,
     db_session: Session = Depends(get_db_session)
@@ -62,7 +66,9 @@ def delete_category(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.put('/{id}', description='Update a category')
+@router.put(
+    '/{id}', description='Update a category',
+    response_model=CategoryOutput)
 def update_category(
     category: Category,
     id: int,
