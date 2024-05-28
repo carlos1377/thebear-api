@@ -22,9 +22,10 @@ def user_register(
 
     services = UserServices(repository)
 
-    services.register_user(user)
+    user_output = services.register_user(user)
 
-    return Response(status_code=status.HTTP_201_CREATED)
+    return Response(user_output,
+                    status_code=status.HTTP_201_CREATED, media_type="json")
 
 
 @router.post('/login')

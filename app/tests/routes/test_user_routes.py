@@ -6,8 +6,6 @@ from app.main import app
 
 client = TestClient(app=app)
 
-# TODO: Create function to login and DRY on routes that need login
-
 
 def test_register_user_route(db_session):
     body = {
@@ -22,6 +20,15 @@ def test_register_user_route(db_session):
     assert response.status_code == status.HTTP_201_CREATED
 
     user_on_db = db_session.query(UserModel).first()
+
+    data = response.json()
+
+    assert data == {
+        "id": user_on_db.id,
+        "username": body['username'],
+        "email": body['email'],
+        "is_staff": body['is_staff'],
+    }
 
     assert user_on_db is not None
 

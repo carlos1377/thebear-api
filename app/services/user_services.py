@@ -34,7 +34,12 @@ class UserServices:
             **user.model_dump(exclude={'password'}),
             password=crypt_context.hash(user.password)
         )
-        self.repository.save(user_model)
+        id = self.repository.save(user_model)
+
+        return UserOutput(
+            id=id, username=user.username,
+            email=user.email, is_staff=user.is_staff
+            ).model_dump_json()
 
     def user_login(self, user: UserLogin, expires_in: int = 30):
         user_on_db = self.repository.get_by_username(user.username)
