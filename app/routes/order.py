@@ -17,9 +17,10 @@ def create_order(
 ):
     services = OrderServices(order_repository)
 
-    services.create_order(order)
+    order_output = services.create_order(order)
 
-    return Response(status_code=status.HTTP_201_CREATED)
+    return Response(order_output.model_dump_json(),
+                    status_code=status.HTTP_201_CREATED, media_type="json")
 
 
 @router.get('/{id}')
@@ -94,9 +95,9 @@ def create_order_item(
     services.create_item(id, order_item)
 
     order_output = services.serializer.serialize_order_output(
-        id).model_dump_json()
+        id)
 
-    return Response(order_output,
+    return Response(order_output.model_dump_json(),
                     status_code=status.HTTP_201_CREATED, media_type="json")
 
 

@@ -83,7 +83,9 @@ class OrderServices:
         )
 
         order_model = OrderModel(**order.model_dump(mode="json"))
-        self.repository.save(order_model)
+        order_id = self.repository.save_retrieve_id(order_model)
+
+        return self.serializer.serialize_order_output(order_id)
 
     def update_order(self, _id: int, order: Order):
         self._if_none_404(self.repository.id_one_or_none(_id), _id)

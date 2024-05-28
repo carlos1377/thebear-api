@@ -42,3 +42,10 @@ class DBOrderRepository(DBRepository):
         self._db_session.add(_object)
         self._db_session.commit()
         self._db_session.refresh(_object)
+
+    def save_retrieve_id(self, _object):
+        self._db_session.add(_object)
+        self._db_session.commit()
+        self._db_session.refresh(_object)
+
+        return _object.id
