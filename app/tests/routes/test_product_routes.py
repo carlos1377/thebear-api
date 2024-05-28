@@ -18,6 +18,8 @@ def test_add_product_route(db_session):
     db_session.commit()
     db_session.refresh(category_on_db)
 
+    category_id = category_on_db.id
+
     body = {
         "name": "Heineken",
         "slug": "bebida-heineken",
@@ -31,6 +33,10 @@ def test_add_product_route(db_session):
 
     assert response.status_code == status.HTTP_201_CREATED
 
+    product_on_db = db_session.query(ProductModel).first()
+
+    data = response.json()
+
     db_session.flush()
 
     category_on_db = db_session.query(CategoryModel).first()
@@ -39,6 +45,20 @@ def test_add_product_route(db_session):
     db_session.commit()
 
     product_on_db = db_session.query(ProductModel).first()
+
+    assert data == {
+        "id": product_on_db.id,
+        "name": body["name"],
+        "slug": body["slug"],
+        "price": body["price"],
+        "stock": body["stock"],
+        "description": body["description"],
+        "category": {
+            "id": category_id,
+            "name": category_on_db.name,
+            "slug": category_on_db.slug
+        }
+    }
 
     assert product_on_db is not None
     assert product_on_db.category_id is None
