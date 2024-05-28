@@ -34,7 +34,7 @@ def test_update_order_services(db_session, order_on_db):
 
     assert order_updated is not None
 
-    assert order_updated.status == order.status.value
+    assert order_updated.status.value == order.status.value
     assert order_updated.check_id == order.check_id
 
 
@@ -66,7 +66,7 @@ def test_partial_update_order_services(db_session, order_on_db):
 
     order = services.update_status(order_on_db.id, new_status)
 
-    assert order.status == new_status.status.value
+    assert order.status.value == new_status.status.value
 
 
 def test_create_order_item_order_services(

@@ -49,7 +49,8 @@ def test_update_order_route(order_on_db):
         'id': order_on_db.id,
         'status': body['status'],
         'check_id': body['check_id'],
-        'date_time': str(order_on_db.date_time)
+        'date_time': str(order_on_db.date_time),
+        'order_items': [],
     }
 
 

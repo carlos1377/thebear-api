@@ -96,7 +96,7 @@ class OrderServices:
         order_updated = self.repository.id_one_or_none(_id)
         order_updated.date_time = format_date(order_updated.date_time)
 
-        return order_updated
+        return self.serializer.serialize_order_output(_id)
 
     def update_status(self, _id: int, new_status: OrderPartial):
         self._if_none_404(self.repository.id_one_or_none(_id), _id)
@@ -107,7 +107,7 @@ class OrderServices:
         order_updated = self.repository.id_one_or_none(_id)
         order_updated.date_time = format_date(order_updated.date_time)
 
-        return order_updated
+        return self.serializer.serialize_order_output(_id)
 
     def delete_order(self, _id: int):
         order_on_db = self.repository.id_one_or_none(_id)
