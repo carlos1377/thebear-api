@@ -82,7 +82,11 @@ def test_list_product_route(db_session, product_on_db, category_on_db):
         "price": product_on_db.price,
         "stock": product_on_db.stock,
         "description": product_on_db.description,
-        "category_id": category_on_db.id
+        "category": {
+            "id": category_on_db.id,
+            "name": category_on_db.name,
+            "slug": category_on_db.slug
+        }
     }
 
 
@@ -102,7 +106,11 @@ def test_list_product_by_id_route(db_session, product_on_db, category_on_db):
         "price": product_on_db.price,
         "stock": product_on_db.stock,
         "description": product_on_db.description,
-        "category_id": category_on_db.id
+        "category": {
+            "id": category_on_db.id,
+            "name": category_on_db.name,
+            "slug": category_on_db.slug
+        }
     }
 
 
