@@ -96,7 +96,8 @@ def create_order_item(
     order_output = services.serializer.serialize_order_output(
         id).model_dump_json()
 
-    return Response(order_output, status_code=status.HTTP_201_CREATED)
+    return Response(order_output,
+                    status_code=status.HTTP_201_CREATED, media_type="json")
 
 
 @router.get('/{id}/items')

@@ -18,9 +18,10 @@ def add_product(
     repository = DBProductRepository(db_session)
     services = ProductServices(repository)
 
-    product_otp = services.add_product(product=product)
+    product_output = services.add_product(product=product)
 
-    return Response(product_otp, status_code=status.HTTP_201_CREATED)
+    return Response(product_output,
+                    status_code=status.HTTP_201_CREATED, media_type="json")
 
 
 @router.get('/{id}')

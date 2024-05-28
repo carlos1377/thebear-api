@@ -21,7 +21,8 @@ def add_clients(
 
     client_added = services.add_client(client=client).model_dump_json()
 
-    return Response(client_added, status_code=status.HTTP_201_CREATED)
+    return Response(client_added,
+                    status_code=status.HTTP_201_CREATED, media_type="json")
 
 
 @router.get('/')

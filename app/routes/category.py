@@ -2,7 +2,6 @@ from app.repositories.sqlalchemy.category_repository import DBCategoryRepository
 from app.services.category_services import CategoryServices
 from fastapi import APIRouter, Depends, Response, status
 from app.routes.deps import auth, get_db_session
-from fastapi.encoders import jsonable_encoder
 from app.schemas.category import Category
 from sqlalchemy.orm import Session
 
@@ -20,9 +19,9 @@ def add_category(
 
     category_otp = service.add_category(category=category)
 
-    return Response(category_otp,
-                    status_code=status.HTTP_201_CREATED
-                    )
+    return Response(
+        category_otp, status_code=status.HTTP_201_CREATED, media_type="json"
+    )
 
 
 @router.get('/', description='List all categories')
@@ -75,4 +74,4 @@ def update_category(
     categoty_otp = service.update_category(id=id, category=category)
 
     return Response(categoty_otp,
-                    status_code=status.HTTP_200_OK)
+                    status_code=status.HTTP_200_OK, media_type="json")
