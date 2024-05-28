@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sleep 25
+
 alembic upgrade heads
 
 echo "Migrations complete, starting server ✅"
