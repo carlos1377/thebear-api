@@ -6,7 +6,7 @@ from app.routes.order import router as order_router
 from app.routes.check import router as check_router
 from app.routes.user import router as user_router
 
-app = FastAPI(version=1, title="The Bear API")
+app = FastAPI(version='v0.1', title="The Bear API")
 
 
 @app.get('/health-check', tags=['Health Check'])
