@@ -21,6 +21,14 @@ def test_add_check_route(db_session):
 
     check_on_db = db_session.query(CheckModel).first()
 
+    data = response.json()
+
+    assert data == {
+        "id": check_on_db.id,
+        "in_use": body['in_use']
+
+    }
+
     db_session.delete(check_on_db)
     db_session.commit()
 

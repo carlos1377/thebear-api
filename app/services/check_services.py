@@ -11,7 +11,9 @@ class CheckServices():
 
     def add_check(self, check: Check):
         check_model = CheckModel(**check.model_dump())
-        self.repository.save(check_model)
+        id = self.repository.save(check_model)
+
+        return CheckOutput(in_use=check.in_use, id=id).model_dump_json()
 
     def get_check(
             self, _id: int | None = None) -> CheckOutput | list[CheckOutput]:

@@ -1,8 +1,8 @@
 from app.services.check_services import CheckServices
 from app.routes.deps import check_repository, auth
+from fastapi import Depends, Response, status
 from fastapi.routing import APIRouter
 from app.schemas.check import Check
-from fastapi import Depends, Response, status
 
 router = APIRouter(
     prefix='/checks', dependencies=[Depends(auth)], tags=['Checks'])
@@ -10,14 +10,19 @@ router = APIRouter(
 
 @router.post('/add')
 def create_check(
-    check: Check,
+    check: Check | None,
     check_repository=Depends(check_repository)
 ):
     services = CheckServices(check_repository)
 
-    services.add_check(check)
+    if check is None:
+        check = Check()
 
-    return Response(status_code=status.HTTP_201_CREATED)
+    check_output = services.add_check(check)
+
+    return Response(
+        check_output, status_code=status.HTTP_201_CREATED, media_type="json"
+    )
 
 
 @router.get('/{id}')
